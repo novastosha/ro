@@ -1,6 +1,6 @@
-package zodalix.ro.game.screen.impl;
+package zodalix.ro.engine.screen.impl;
 
-import zodalix.ro.game.screen.ui.GUIScreen;
+import zodalix.ro.engine.screen.ui.GUIScreen;
 
 public class OptionsScreen extends GUIScreen {
 }

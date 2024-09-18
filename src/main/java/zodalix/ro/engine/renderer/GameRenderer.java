@@ -1,14 +1,14 @@
-package zodalix.ro.game.renderer;
+package zodalix.ro.engine.renderer;
 
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFWWindowSizeCallbackI;
 import zodalix.ro.game.RoguesOdyssey;
-import zodalix.ro.game.utils.position.Point2D;
-import zodalix.ro.game.screen.GameScreen;
-import zodalix.ro.game.screen.InputListeningGameScreen;
-import zodalix.ro.game.screen.ui.elements.text.Text;
-import zodalix.ro.game.screen.ui.elements.text.TextComponent;
+import zodalix.ro.engine.utils.position.Point2D;
+import zodalix.ro.engine.screen.GameScreen;
+import zodalix.ro.engine.screen.InputListeningGameScreen;
+import zodalix.ro.engine.screen.ui.elements.text.Text;
+import zodalix.ro.engine.screen.ui.elements.text.TextComponent;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL33.*;

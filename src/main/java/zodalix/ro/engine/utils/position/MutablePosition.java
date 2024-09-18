@@ -1,4 +1,4 @@
-package zodalix.ro.game.utils.position;
+package zodalix.ro.engine.utils.position;
 
 public non-sealed class MutablePosition implements Position {
     private float x,y;

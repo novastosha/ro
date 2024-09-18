@@ -1,7 +1,7 @@
-package zodalix.ro.game.base.entity;
+package zodalix.ro.engine.base.entity;
 
-import zodalix.ro.game.utils.BoundingBox;
-import zodalix.ro.game.utils.position.Position;
+import zodalix.ro.engine.utils.BoundingBox;
+import zodalix.ro.engine.utils.position.Position;
 
 import java.util.UUID;
 

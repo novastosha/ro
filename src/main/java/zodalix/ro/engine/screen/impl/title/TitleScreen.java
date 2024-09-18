@@ -1,16 +1,16 @@
-package zodalix.ro.game.screen.impl.title;
+package zodalix.ro.engine.screen.impl.title;
 
 import org.joml.Matrix4f;
 import zodalix.ro.game.RoguesOdyssey;
-import zodalix.ro.game.base.objects.Cloud;
-import zodalix.ro.game.screen.GameScreen;
-import zodalix.ro.game.screen.ui.GUIScreen;
-import zodalix.ro.game.screen.ui.elements.Button;
-import zodalix.ro.game.screen.ui.elements.GUIElement;
-import zodalix.ro.game.screen.ui.elements.text.Text;
-import zodalix.ro.game.screen.ui.elements.text.TextComponent;
-import zodalix.ro.game.utils.RenderingUtils;
-import zodalix.ro.game.utils.position.MutablePosition;
+import zodalix.ro.game.entity.Cloud;
+import zodalix.ro.engine.screen.GameScreen;
+import zodalix.ro.engine.screen.ui.GUIScreen;
+import zodalix.ro.engine.screen.ui.elements.Button;
+import zodalix.ro.engine.screen.ui.elements.GUIElement;
+import zodalix.ro.engine.screen.ui.elements.text.Text;
+import zodalix.ro.engine.screen.ui.elements.text.TextComponent;
+import zodalix.ro.engine.utils.RenderingUtils;
+import zodalix.ro.engine.utils.position.MutablePosition;
 
 import java.security.SecureRandom;
 import java.util.HashMap;

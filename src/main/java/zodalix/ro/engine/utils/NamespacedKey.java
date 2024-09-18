@@ -1,4 +1,4 @@
-package zodalix.ro.game.utils;
+package zodalix.ro.engine.utils;
 
 import org.jetbrains.annotations.NotNull;
 

@@ -1,12 +1,12 @@
-package zodalix.ro.game.asset;
+package zodalix.ro.engine.asset;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.joml.Matrix4f;
 import zodalix.ro.game.RoguesOdyssey;
-import zodalix.ro.game.utils.position.Point2D;
-import zodalix.ro.game.utils.NamespacedKey;
-import zodalix.ro.game.renderer.DrawProperty;
+import zodalix.ro.engine.utils.position.Point2D;
+import zodalix.ro.engine.utils.NamespacedKey;
+import zodalix.ro.engine.renderer.DrawProperty;
 
 import java.awt.Color;
 import java.io.IOException;

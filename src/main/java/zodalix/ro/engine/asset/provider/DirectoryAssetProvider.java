@@ -1,4 +1,4 @@
-package zodalix.ro.game.asset.provider;
+package zodalix.ro.engine.asset.provider;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

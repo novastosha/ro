@@ -1,6 +1,6 @@
-package zodalix.ro.game.renderer;
+package zodalix.ro.engine.renderer;
 
-import zodalix.ro.game.asset.GameTexture;
+import zodalix.ro.engine.asset.GameTexture;
 
 import java.awt.Color;
 

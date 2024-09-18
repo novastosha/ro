@@ -1,9 +1,9 @@
-package zodalix.ro.game.asset;
+package zodalix.ro.engine.asset;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import zodalix.ro.game.RoguesOdyssey;
-import zodalix.ro.game.utils.NamespacedKey;
+import zodalix.ro.engine.utils.NamespacedKey;
 
 
 import java.io.IOException;

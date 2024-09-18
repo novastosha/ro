@@ -1,4 +1,4 @@
-package zodalix.ro.game.utils.position;
+package zodalix.ro.engine.utils.position;
 
 public sealed interface Position permits MutablePosition, ImmutablePosition {
 

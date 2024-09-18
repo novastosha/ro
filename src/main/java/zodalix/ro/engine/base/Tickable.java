@@ -1,4 +1,4 @@
-package zodalix.ro.game.base;
+package zodalix.ro.engine.base;
 
 public interface Tickable {
 

@@ -1,10 +1,10 @@
-package zodalix.ro.game.utils;
+package zodalix.ro.engine.utils;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
-import zodalix.ro.game.utils.position.Point2D;
-import zodalix.ro.game.renderer.GameRenderer;
+import zodalix.ro.engine.utils.position.Point2D;
+import zodalix.ro.engine.renderer.GameRenderer;
 
 public final class RenderingUtils {
 

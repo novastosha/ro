@@ -1,7 +1,7 @@
-package zodalix.ro.game.screen;
+package zodalix.ro.engine.screen;
 
 import org.joml.Matrix4f;
-import zodalix.ro.game.utils.position.Point2D;
+import zodalix.ro.engine.utils.position.Point2D;
 
 public interface InputListeningGameScreen extends GameScreen {
 

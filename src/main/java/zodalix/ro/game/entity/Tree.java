@@ -1,10 +1,10 @@
-package zodalix.ro.game.base.objects;
+package zodalix.ro.game.entity;
 
 import org.joml.Matrix4f;
-import zodalix.ro.game.utils.BoundingBox;
-import zodalix.ro.game.base.entity.DrawableEntity;
-import zodalix.ro.game.base.entity.InteractiveEntity;
-import zodalix.ro.game.utils.position.Position;
+import zodalix.ro.engine.utils.BoundingBox;
+import zodalix.ro.engine.base.entity.DrawableEntity;
+import zodalix.ro.engine.base.entity.InteractiveEntity;
+import zodalix.ro.engine.utils.position.Position;
 
 import java.util.UUID;
 

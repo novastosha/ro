@@ -1,10 +1,10 @@
-package zodalix.ro.game.asset;
+package zodalix.ro.engine.asset;
 
 import zodalix.ro.game.RoguesOdyssey;
 
-import zodalix.ro.game.asset.provider.AssetProvider;
-import zodalix.ro.game.asset.provider.ClassResourceAssetProvider;
-import zodalix.ro.game.utils.NamespacedKey;
+import zodalix.ro.engine.asset.provider.AssetProvider;
+import zodalix.ro.engine.asset.provider.ClassResourceAssetProvider;
+import zodalix.ro.engine.utils.NamespacedKey;
 
 import java.io.InputStream;
 import java.util.HashMap;

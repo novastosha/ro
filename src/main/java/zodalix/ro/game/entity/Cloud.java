@@ -1,13 +1,13 @@
-package zodalix.ro.game.base.objects;
+package zodalix.ro.game.entity;
 
 import org.joml.Matrix4f;
 import zodalix.ro.game.RoguesOdyssey;
-import zodalix.ro.game.asset.GameTexture;
-import zodalix.ro.game.utils.BoundingBox;
-import zodalix.ro.game.base.entity.DrawableEntity;
-import zodalix.ro.game.utils.NamespacedKey;
-import zodalix.ro.game.renderer.DrawProperty;
-import zodalix.ro.game.utils.position.Position;
+import zodalix.ro.engine.asset.GameTexture;
+import zodalix.ro.engine.utils.BoundingBox;
+import zodalix.ro.engine.base.entity.DrawableEntity;
+import zodalix.ro.engine.utils.NamespacedKey;
+import zodalix.ro.engine.renderer.DrawProperty;
+import zodalix.ro.engine.utils.position.Position;
 
 import java.util.UUID;
 

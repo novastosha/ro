@@ -1,6 +1,6 @@
-package zodalix.ro.game.screen.ui.elements.text;
+package zodalix.ro.engine.screen.ui.elements.text;
 
-import zodalix.ro.game.utils.BoundingBox;
+import zodalix.ro.engine.utils.BoundingBox;
 
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;

@@ -1,8 +1,8 @@
-package zodalix.ro.game.asset.provider;
+package zodalix.ro.engine.asset.provider;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import zodalix.ro.game.asset.AssetManager;
+import zodalix.ro.engine.asset.AssetManager;
 
 import java.io.InputStream;
 import java.util.Objects;

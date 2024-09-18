@@ -3,10 +3,10 @@ package zodalix.ro.game;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
-import zodalix.ro.game.asset.AssetManager;
-import zodalix.ro.game.input.GameInputHandler;
-import zodalix.ro.game.renderer.GameRenderer;
-import zodalix.ro.game.screen.impl.title.TitleScreen;
+import zodalix.ro.engine.asset.AssetManager;
+import zodalix.ro.engine.input.GameInputHandler;
+import zodalix.ro.engine.renderer.GameRenderer;
+import zodalix.ro.engine.screen.impl.title.TitleScreen;
 
 import java.nio.IntBuffer;
 import java.util.Objects;

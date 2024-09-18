@@ -1,9 +1,9 @@
-package zodalix.ro.game.screen.ui.elements;
+package zodalix.ro.engine.screen.ui.elements;
 
 import org.joml.Matrix4f;
-import zodalix.ro.game.utils.position.Point2D;
-import zodalix.ro.game.utils.BoundingBox;
-import zodalix.ro.game.screen.ui.GUIScreen;
+import zodalix.ro.engine.utils.position.Point2D;
+import zodalix.ro.engine.utils.BoundingBox;
+import zodalix.ro.engine.screen.ui.GUIScreen;
 
 public interface GUIElement {
     boolean isHoveredOver();

@@ -1,4 +1,4 @@
-package zodalix.ro.game.screen;
+package zodalix.ro.engine.screen;
 
 import org.joml.Matrix4f;
 

@@ -1,4 +1,4 @@
-package zodalix.ro.game.asset;
+package zodalix.ro.engine.asset;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -6,10 +6,10 @@ import org.joml.Matrix4f;
 
 import org.lwjgl.BufferUtils;
 import zodalix.ro.game.RoguesOdyssey;
-import zodalix.ro.game.utils.position.Point2D;
-import zodalix.ro.game.utils.NamespacedKey;
-import zodalix.ro.game.renderer.DrawProperty;
-import zodalix.ro.game.utils.RenderingUtils;
+import zodalix.ro.engine.utils.position.Point2D;
+import zodalix.ro.engine.utils.NamespacedKey;
+import zodalix.ro.engine.renderer.DrawProperty;
+import zodalix.ro.engine.utils.RenderingUtils;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -19,7 +19,7 @@ import java.nio.ByteBuffer;
 
 import static org.lwjgl.opengl.GL33.*;
 import static org.lwjgl.stb.STBImage.*;
-import static zodalix.ro.game.utils.RenderingUtils.normalizeRGBA;
+import static zodalix.ro.engine.utils.RenderingUtils.normalizeRGBA;
 
 public class GameTexture {
     private static final Logger logger = LogManager.getLogger("Assets");

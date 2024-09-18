@@ -1,14 +1,14 @@
-package zodalix.ro.game.screen.ui;
+package zodalix.ro.engine.screen.ui;
 
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import zodalix.ro.game.RoguesOdyssey;
-import zodalix.ro.game.asset.GameShader;
-import zodalix.ro.game.utils.position.Point2D;
-import zodalix.ro.game.utils.NamespacedKey;
-import zodalix.ro.game.screen.InputListeningGameScreen;
-import zodalix.ro.game.screen.ui.elements.GUIElement;
-import zodalix.ro.game.utils.RenderingUtils;
+import zodalix.ro.engine.asset.GameShader;
+import zodalix.ro.engine.utils.position.Point2D;
+import zodalix.ro.engine.utils.NamespacedKey;
+import zodalix.ro.engine.screen.InputListeningGameScreen;
+import zodalix.ro.engine.screen.ui.elements.GUIElement;
+import zodalix.ro.engine.utils.RenderingUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;

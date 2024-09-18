@@ -1,16 +1,16 @@
-package zodalix.ro.game.screen.ui.elements.text;
+package zodalix.ro.engine.screen.ui.elements.text;
 
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import zodalix.ro.game.RoguesOdyssey;
-import zodalix.ro.game.asset.GameShader;
-import zodalix.ro.game.asset.GameTexture;
-import zodalix.ro.game.utils.position.Point2D;
-import zodalix.ro.game.utils.BoundingBox;
-import zodalix.ro.game.utils.NamespacedKey;
-import zodalix.ro.game.screen.ui.GUIScreen;
-import zodalix.ro.game.screen.ui.elements.GUIElement;
-import zodalix.ro.game.utils.RenderingUtils;
+import zodalix.ro.engine.asset.GameShader;
+import zodalix.ro.engine.asset.GameTexture;
+import zodalix.ro.engine.utils.position.Point2D;
+import zodalix.ro.engine.utils.BoundingBox;
+import zodalix.ro.engine.utils.NamespacedKey;
+import zodalix.ro.engine.screen.ui.GUIScreen;
+import zodalix.ro.engine.screen.ui.elements.GUIElement;
+import zodalix.ro.engine.utils.RenderingUtils;
 
 import java.lang.foreign.Arena;
 import java.lang.foreign.ValueLayout;
@@ -20,9 +20,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 
 import static org.lwjgl.opengl.GL33.*;
-import static zodalix.ro.game.screen.ui.elements.text.StringTextComponent.LOW_HANGING_CHARACTERS;
-import static zodalix.ro.game.screen.ui.elements.text.StringTextComponent.LOW_OFFSET_CHARACTERS;
-import static zodalix.ro.game.utils.RenderingUtils.normalizeRGBA;
+import static zodalix.ro.engine.screen.ui.elements.text.StringTextComponent.LOW_HANGING_CHARACTERS;
+import static zodalix.ro.engine.screen.ui.elements.text.StringTextComponent.LOW_OFFSET_CHARACTERS;
+import static zodalix.ro.engine.utils.RenderingUtils.normalizeRGBA;
 
 public class Text implements GUIElement {
 

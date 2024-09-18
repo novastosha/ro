@@ -1,8 +1,8 @@
-package zodalix.ro.game.utils;
+package zodalix.ro.engine.utils;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import zodalix.ro.game.renderer.GameRenderer;
+import zodalix.ro.engine.renderer.GameRenderer;
 
 public record BoundingBox(float leftX, float rightX, float topY, float bottomY) {
 

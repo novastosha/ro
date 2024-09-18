@@ -1,4 +1,4 @@
-package zodalix.ro.game.base.dungeon;
+package zodalix.ro.game.dungeon;
 
 import java.util.Random;
 

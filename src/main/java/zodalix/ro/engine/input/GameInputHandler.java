@@ -1,4 +1,4 @@
-package zodalix.ro.game.input;
+package zodalix.ro.engine.input;
 
 import zodalix.ro.game.RoguesOdyssey;
 
