@@ -2,9 +2,7 @@ package zodalix.ro.game.input;
 
 import zodalix.ro.game.RoguesOdyssey;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
@@ -15,9 +13,7 @@ public class GameInputHandler {
     private int lastKnownMouseMods = 0;
     private final Set<Integer> mouseButtonsHeld = new HashSet<>();
 
-    public GameInputHandler(RoguesOdyssey instance) {
-
-    }
+    public GameInputHandler(RoguesOdyssey instance) {}
 
     public void keyboardInputReceived(int keycode, int modifiers, int action) {
         RoguesOdyssey.instance().renderer.handleKeyboardInput(keycode, modifiers, action);

@@ -66,7 +66,6 @@ public class AnimatedGameTexture extends GameTexture {
                 int framesToAdvance = (int) (elapsedTime / frameDuration);
 
                 currentFrame = (currentFrame + framesToAdvance) % totalFrames;
-                System.out.println(currentFrame);
                 elapsedTime -= framesToAdvance * frameDuration;
             }
         }

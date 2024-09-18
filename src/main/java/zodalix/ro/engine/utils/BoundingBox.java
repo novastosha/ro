@@ -54,6 +54,7 @@ public record BoundingBox(float leftX, float rightX, float topY, float bottomY) 
 
     public boolean isScreenVisible(float x, float y, GameRenderer renderer) {
         var ratio = renderer.getLastKnownWindowWidth() / (float) renderer.getLastKnownWindowHeight();
+        if(Float.isNaN(ratio) || ratio == 0) return true; // This occurs when the screen is minimized.
 
         var maxX = 9f * ratio;
         var maxY = 9f;

@@ -14,7 +14,7 @@ public non-sealed class DirectoryAssetProvider implements AssetProvider {
     public InputStream provide(@NotNull String path) {
         Objects.requireNonNull(path, "path cannot be null.");
         try { return new FileInputStream(path); }
-        catch (FileNotFoundException notFoundException) {
+        catch (FileNotFoundException _) {
             return FileInputStream.nullInputStream();
         }
     }

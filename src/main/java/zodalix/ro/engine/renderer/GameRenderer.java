@@ -125,7 +125,6 @@ public class GameRenderer {
     }
 
     public void handleKeyboardInput(int keycode, int modifiers, int action) {
-        System.out.println(Thread.currentThread().getName());
         this.showDebugInfo = action != GLFW_RELEASE && keycode == GLFW_KEY_F1;
 
         if (!(this.currentScreen instanceof InputListeningGameScreen ilGameScreen)) return;
