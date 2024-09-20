@@ -21,10 +21,8 @@ public class GameShader {
     public final int fragmentShaderId, vertexShaderId;
     public final int glShaderProgram;
 
-    GameShader(NamespacedKey key) {
+    GameShader(NamespacedKey key, final AssetManager am) {
         this.key = key;
-
-        var am = RoguesOdyssey.instance().assetManager;
 
         var fragmentResource = am.provideAsset("/assets/" + key.toString().replaceAll(":", "/") + "/fragment.glsl");
         Objects.requireNonNull(fragmentResource);

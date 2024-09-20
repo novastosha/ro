@@ -19,7 +19,7 @@ public class AssetManager {
     public AssetManager(RoguesOdyssey instance) {
         {
             this.loadedTextures = new HashMap<>();
-            this.loadedShaders  = new HashMap<>();
+            this.loadedShaders = new HashMap<>();
         }
         this.assetProvider = new ClassResourceAssetProvider(this);
     }
@@ -43,11 +43,11 @@ public class AssetManager {
 
         return (AnimatedGameTexture) this.loadedTextures.get(key);
     }
-    
+
     public GameShader getShader(NamespacedKey key) {
         if (!loadedShaders.containsKey(key)) {
             GameShader asset;
-            this.loadedShaders.put(key, asset = new GameShader(key));
+            this.loadedShaders.put(key, asset = new GameShader(key, this));
             return asset;
         }
 

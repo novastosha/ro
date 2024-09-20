@@ -1,6 +1,7 @@
 package zodalix.ro.engine.screen.ui.elements;
 
 import org.joml.Matrix4f;
+
 import zodalix.ro.game.RoguesOdyssey;
 import zodalix.ro.engine.asset.GameTexture;
 import zodalix.ro.engine.utils.position.Point2D;
@@ -11,21 +12,27 @@ import zodalix.ro.engine.screen.ui.GUIScreen;
 import zodalix.ro.engine.screen.ui.elements.text.Text;
 import zodalix.ro.engine.screen.ui.elements.text.TextComponent;
 
-import java.util.Objects;
-
+import java.util.function.Consumer;
 
 public class Button<S extends Button.Style> implements GUIElement {
 
     private static final float BUTTON_SCALE = .5f; //.375f;
 
+    private final Consumer<Event> eventConsumer;
+
     private final S style;
     private float x, y;
 
-
     public Button(S style, float x, float y) {
+        this(style, x, y, null);
+    }
+
+    public Button(S style, float x, float y, Consumer<Event> eventConsumer) {
         this.style = style;
         this.x = x;
         this.y = y;
+
+        this.eventConsumer = eventConsumer;
 
         if (style instanceof Style.Default def) def.textElement.changePosition(new Point2D(x, y));
     }
@@ -87,9 +94,10 @@ public class Button<S extends Button.Style> implements GUIElement {
 
     @Override
     public void onElementEvent(Event event, float cursorX, float cursorY) {
-        if (Objects.requireNonNull(this.style) instanceof Style.Default def) {
+        if (this.style instanceof Style.Default def)
             def.textElement.onElementEvent(event, cursorX, cursorY);
-        } // FIXME: Remove this switch clause (debug)
+
+        if(eventConsumer != null) eventConsumer.accept(event);
     }
 
     public sealed interface Style permits

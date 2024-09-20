@@ -75,9 +75,6 @@ public class GUIScreen implements InputListeningGameScreen {
 
     @Override
     public void mouseClicked(int button, int mods, int action, Matrix4f projectionMatrix, Point2D mousePosition) {
-        var window = RoguesOdyssey.instance().windowHandle;
-        var gameRenderer = RoguesOdyssey.instance().renderer;
-
         float mouseX = mousePosition.x, mouseY = mousePosition.y;
 
         for (var element : elements) {

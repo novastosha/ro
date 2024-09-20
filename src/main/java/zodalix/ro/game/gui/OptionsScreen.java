@@ -1,4 +1,4 @@
-package zodalix.ro.engine.screen.impl;
+package zodalix.ro.game.gui;
 
 import zodalix.ro.engine.screen.ui.GUIScreen;
 

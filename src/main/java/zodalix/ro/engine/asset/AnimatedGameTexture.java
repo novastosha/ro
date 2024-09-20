@@ -26,7 +26,7 @@ public class AnimatedGameTexture extends GameTexture {
         assert resource != null : "Couldn't find resource.";
 
         try (resource; final var reader = new InputStreamReader(resource)) {
-            var root = (JsonObject) GSON.fromJson(reader, JsonObject.class);
+            var root = GSON.fromJson(reader, JsonObject.class);
 
             this.totalFrames = root.get("frames").getAsInt();
             this.widthPerFrame = root.get("wpf").getAsInt();

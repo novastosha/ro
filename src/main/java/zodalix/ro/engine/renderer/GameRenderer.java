@@ -3,6 +3,8 @@ package zodalix.ro.engine.renderer;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFWWindowSizeCallbackI;
+import zodalix.ro.engine.asset.GameShader;
+import zodalix.ro.engine.utils.NamespacedKey;
 import zodalix.ro.game.RoguesOdyssey;
 import zodalix.ro.engine.utils.position.Point2D;
 import zodalix.ro.engine.screen.GameScreen;
@@ -15,9 +17,8 @@ import static org.lwjgl.opengl.GL33.*;
 
 public class GameRenderer {
 
-    private Text debugText, ramText,frameInfoText;
+    private Text debugText, ramText, frameInfoText;
     private boolean showDebugInfo = false;
-
 
     private final Matrix4f projectionMatrix;
     private boolean shouldOverlay;
@@ -42,13 +43,13 @@ public class GameRenderer {
     }
 
     public void postInit() {
-        this.debugText = new Text(-9.5f,9.5f, .5f, TextComponent.text("No data on last frame."));
+        this.debugText = new Text(-9.5f, 9.5f, .5f, TextComponent.text("No data on last frame."));
         this.debugText.setDrawStyle(Text.DrawStyle.ABSOLUTE);
 
-        this.frameInfoText = new Text(-9.5f,7f, .37f, TextComponent.text("No data on last frame."));
+        this.frameInfoText = new Text(-9.5f, 7f, .37f, TextComponent.text("No data on last frame."));
         this.frameInfoText.setDrawStyle(Text.DrawStyle.ABSOLUTE);
 
-        this.ramText = new Text(-9.5f,8f, .5f, TextComponent.text("RAM usage should be here"));
+        this.ramText = new Text(-9.5f, 8f, .5f, TextComponent.text("RAM usage should be here"));
         this.ramText.setDrawStyle(Text.DrawStyle.ABSOLUTE);
     }
 
@@ -57,6 +58,10 @@ public class GameRenderer {
     }
 
     public void setCurrentScreen(GameScreen newScreen) {
+        this.setCurrentScreen(newScreen, 0f);
+    }
+
+    public void setCurrentScreen(GameScreen newScreen, float fadeFactor) {
         //noinspection AssignmentUsedAsCondition
         if ((this.shouldOverlay = newScreen.isOverlayScreen() && currentScreen != null)) {
             this.overlayingScreen = this.currentScreen;
@@ -70,10 +75,10 @@ public class GameRenderer {
 
         //TODO: Maybe overlay screens should continue to render the underlying screen but just make it non-interactive.
         if (shouldOverlay) overlayingScreen.draw(projectionMatrix, deltaTime);
-        this.currentScreen.draw(projectionMatrix,deltaTime);
+        this.currentScreen.draw(projectionMatrix, deltaTime);
 
-        if(showDebugInfo) {
-            this.debugText.draw(null, 0f, 0f, projectionMatrix,deltaTime);
+        if (showDebugInfo) {
+            this.debugText.draw(null, 0f, 0f, projectionMatrix, deltaTime);
             this.frameInfoText.draw(null, 0f, 0f, projectionMatrix, deltaTime);
             this.ramText.draw(null, 0f, 0f, projectionMatrix, deltaTime);
         }
@@ -121,7 +126,7 @@ public class GameRenderer {
             mouseY = relativeCoordinates.y;
         }
 
-        ilGameScreen.mouseClicked(mouseButton, modifiers, action, this.projectionMatrix, new Point2D(mouseX,mouseY));
+        ilGameScreen.mouseClicked(mouseButton, modifiers, action, this.projectionMatrix, new Point2D(mouseX, mouseY));
     }
 
     public void handleKeyboardInput(int keycode, int modifiers, int action) {
@@ -133,7 +138,7 @@ public class GameRenderer {
 
     public void displayFPS(long fps, long frametime, long renderDiff) {
         debugText.setText(TextComponent.composedText("<cyan shadow>{} FPS", fps));
-        frameInfoText.setText(TextComponent.composedText("<white shadow>Frame-time: <cyan shadow>{}ms <white shadow>Rendering took: <pink bold>{}ms",frametime,renderDiff));
+        frameInfoText.setText(TextComponent.composedText("<white shadow>Frame-time: <cyan shadow>{}ms <white shadow>Rendering took: <pink bold>{}ms", frametime, renderDiff));
 
         {
             Runtime runtime = Runtime.getRuntime();
@@ -143,8 +148,11 @@ public class GameRenderer {
 
             try {
                 var offHeapMemory = ((Long) java.lang.management.ManagementFactory.getPlatformMBeanServer().getAttribute(new javax.management.ObjectName("java.nio:type=BufferPool,name=direct"), "MemoryUsed")) / (1024 * 1024);
-                ramText.setText(TextComponent.composedText("<shadow>On-heap: <orange shadow bold>{}MB<break>  <shadow>Off-heap: <orange shadow bold>{}MB",(usedMemory/1024/1024),offHeapMemory));
-            } catch (Throwable _) {}
+                ramText.setText(TextComponent.composedText("<shadow>On-heap: <orange shadow bold>{}MB<break>  <shadow>Off-heap: <orange shadow bold>{}MB", (usedMemory / 1024 / 1024), offHeapMemory));
+            } catch (Throwable _) {
+            }
         }
     }
+
+
 }

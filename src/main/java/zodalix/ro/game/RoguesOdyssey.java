@@ -6,7 +6,7 @@ import org.lwjgl.opengl.GL;
 import zodalix.ro.engine.asset.AssetManager;
 import zodalix.ro.engine.input.GameInputHandler;
 import zodalix.ro.engine.renderer.GameRenderer;
-import zodalix.ro.engine.screen.impl.title.TitleScreen;
+import zodalix.ro.game.gui.TitleScreen;
 
 import java.nio.IntBuffer;
 import java.util.Objects;
@@ -91,15 +91,6 @@ public final class RoguesOdyssey {
         RoguesOdyssey.instance = new RoguesOdyssey();
     }
 
-    /**
-     * Invoking this method:
-     * <p>
-     * - Shows the game window
-     * - Loads game assets
-     * - Starts the game loop on the main thread
-     *
-     * @see GameRenderer
-     */
     public void startGame() {
         GL.createCapabilities();
 

@@ -1,6 +1,8 @@
-package zodalix.ro.engine.screen.impl.title;
+package zodalix.ro.game.gui;
 
 import org.joml.Matrix4f;
+import org.lwjgl.glfw.GLFW;
+import zodalix.ro.engine.utils.position.Point2D;
 import zodalix.ro.game.RoguesOdyssey;
 import zodalix.ro.game.entity.Cloud;
 import zodalix.ro.engine.screen.GameScreen;
@@ -12,9 +14,10 @@ import zodalix.ro.engine.screen.ui.elements.text.TextComponent;
 import zodalix.ro.engine.utils.RenderingUtils;
 import zodalix.ro.engine.utils.position.MutablePosition;
 
-import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.lwjgl.opengl.GL33.*;
 
@@ -52,8 +55,16 @@ public class TitleScreen extends GUIScreen {
         return new Button<>(
                 new Button.Style.Default(TextComponent.parse("<shadow>New Game")),
                 x,
-                y
-        );
+                y,
+                event -> {
+                    if (!(event instanceof GUIElement.ClickEvent(int button, int _, int action))) return;
+                    if (button != 0 && action != GLFW.GLFW_RELEASE) return;
+
+                    RoguesOdyssey.instance()
+                            .renderer
+                            .setCurrentScreen(new CharacterSelectionScreen(), 1f);
+                }
+        ); //TODO: Figure out a better way to handle button interactions. (or input in general
     }
 
     private GUIElement continueGameButton(float x, float y) {
@@ -72,14 +83,14 @@ public class TitleScreen extends GUIScreen {
         );
     }
 
-    public static class BackgroundScreen implements GameScreen {
+    private static final class BackgroundScreen implements GameScreen {
 
         private final Map<Cloud, MutablePosition> clouds;
 
-        private final SecureRandom random;
+        private final Random random;
 
         {
-            this.random = new SecureRandom();
+            this.random = ThreadLocalRandom.current();
             float x = RenderingUtils.transformPoint(-9.5f, RoguesOdyssey.instance().renderer);
 
             this.clouds = new HashMap<>();
