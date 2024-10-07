@@ -52,7 +52,7 @@ public class AnimatedGameTexture extends GameTexture {
             for (var property: drawProperties) {
                 if(property instanceof DrawProperty.Scale scale1) scale = scale1.value();
                 if(property instanceof DrawProperty.Rotation rotation1) rotation = rotation1.degrees();
-                if(property instanceof DrawProperty.ColorMultiply colorMultiply) colorTransform = colorMultiply.color();
+                if(property instanceof DrawProperty.ColorTransform colorMultiply) colorTransform = colorMultiply.color();
             }
 
             float frameHeight = getHeight() / (float) totalFrames;

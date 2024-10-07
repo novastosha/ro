@@ -9,17 +9,17 @@ import java.awt.Color;
  * <p>
  * Each property is an argument passed into a monolithic draw call in {@link GameTexture}
  *
- * @see ColorMultiply
+ * @see ColorTransform
  * @see Rotation
  * @see Scale
  * @see Dimensions
  */
-public sealed interface DrawProperty permits DrawProperty.ColorMultiply, DrawProperty.Dimensions, DrawProperty.Rotation, DrawProperty.Scale {
+public sealed interface DrawProperty permits DrawProperty.ColorTransform, DrawProperty.Dimensions, DrawProperty.Rotation, DrawProperty.Scale {
     /**
      * Describes what color should be applied to the texture in the GPU shader call.
      * @param color the color to apply
      */
-    record ColorMultiply(Color color) implements DrawProperty { }
+    record ColorTransform(Color color) implements DrawProperty { }
 
     /**
      * When passed into a draw call, the angle is converted into radians and passed into the shader to process. The texture is then rendered at the desired rotation.
@@ -46,7 +46,7 @@ public sealed interface DrawProperty permits DrawProperty.ColorMultiply, DrawPro
     }
 
     static DrawProperty color(Color color) {
-        return new ColorMultiply(color);
+        return new ColorTransform(color);
     }
 
     static DrawProperty scale(float val) {

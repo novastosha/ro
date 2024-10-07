@@ -98,7 +98,7 @@ public class GameTexture {
             }
 
             if(property instanceof DrawProperty.Rotation rotation1) rotation = rotation1.degrees();
-            if(property instanceof DrawProperty.ColorMultiply colorMultiply) colorTransform = colorMultiply.color();
+            if(property instanceof DrawProperty.ColorTransform colorMultiply) colorTransform = colorMultiply.color();
         }
 
         drawDefault0(am, position, 0, 0, getWidth(), getHeight(), width, height, scale, projectionMatrix, colorTransform,rotation);
