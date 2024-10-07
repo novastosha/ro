@@ -40,14 +40,11 @@ public class StringTextComponent extends TextComponent {
 
     @Override
     public BoundingBox boundingBox() {
-        AtomicReference<Float> lr = new AtomicReference<>(normalizedWidth * this.string.length()); // MULTIPLY BY SCALE IN TEXT CLASS
-        this.string.chars().forEach(i -> {
-            if (LOW_OFFSET_CHARACTERS.contains((char) i)) {
-                lr.updateAndGet(v -> (v - normalizedWidth * .575f));
-            }
-        });
+        float lr = normalizedWidth * this.string.length();
+        for (final char i : this.string.toCharArray())
+            if (LOW_OFFSET_CHARACTERS.contains(i)) lr -= normalizedWidth * .575f;
 
-        return BoundingBox.rectangle(lr.get(), normalizedWidth + .25f);
+        return BoundingBox.rectangle(lr, normalizedWidth + .25f);
     }
 
     public boolean shouldDrawShadow() {
