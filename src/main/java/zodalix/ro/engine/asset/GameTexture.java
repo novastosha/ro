@@ -90,16 +90,17 @@ public class GameTexture {
         float width = getWidth(), height = getHeight();
         float scale = 1f, rotation = 0;
         Color colorTransform = null;
-        for (var property: drawProperties) {
-            if(property instanceof DrawProperty.Scale scale1) scale = scale1.value();
-            if(property instanceof DrawProperty.Dimensions dimensions) {
-                width = dimensions.width();
-                height = dimensions.height();
-            }
 
-            if(property instanceof DrawProperty.Rotation rotation1) rotation = rotation1.degrees();
-            if(property instanceof DrawProperty.ColorTransform colorMultiply) colorTransform = colorMultiply.color();
-        }
+        for (final var property: drawProperties)
+            switch (property) {
+                case DrawProperty.Scale val -> scale = val.value();
+                case DrawProperty.Rotation val -> rotation = val.degrees();
+                case DrawProperty.ColorTransform val -> colorTransform = val.color();
+                case DrawProperty.Dimensions dimensions -> {
+                    width = dimensions.width();
+                    height = dimensions.height();
+                }
+            }
 
         drawDefault0(am, position, 0, 0, getWidth(), getHeight(), width, height, scale, projectionMatrix, colorTransform,rotation);
     }
