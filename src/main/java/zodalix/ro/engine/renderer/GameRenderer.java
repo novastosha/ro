@@ -3,8 +3,7 @@ package zodalix.ro.engine.renderer;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFWWindowSizeCallbackI;
-import zodalix.ro.engine.asset.GameShader;
-import zodalix.ro.engine.utils.NamespacedKey;
+import zodalix.ro.engine.base.Tickable;
 import zodalix.ro.game.RoguesOdyssey;
 import zodalix.ro.engine.utils.position.Point2D;
 import zodalix.ro.engine.screen.GameScreen;
@@ -15,7 +14,18 @@ import zodalix.ro.engine.screen.ui.elements.text.TextComponent;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL33.*;
 
-public class GameRenderer {
+/**
+ * The {@code GameRenderer} class is responsible for rendering the game content using OpenGL and managing the
+ * rendering pipeline. It handles different game screens and responds to window resizing events.
+ * <p>
+ * It maintains the projection matrix for transforming the game's 2D content and renders both the active
+ * game screen and any overlays.
+ *
+ * @see GameScreen
+ * @see RoguesOdyssey
+ * @see org.lwjgl.opengl.GL33
+ */
+public class GameRenderer implements Tickable {
 
     private Text debugText, ramText, frameInfoText;
     private boolean showDebugInfo = false;
@@ -39,9 +49,15 @@ public class GameRenderer {
         this.shouldOverlay = false;
 
         this.projectionMatrix = new Matrix4f()
-                .setOrtho(-10.0f, 10.0f, -10.0f, 10.0f, -0.1f, 0.1f);
+                .setOrtho(-10.0f, 10.0f, -10.0f, 10.0f, -1f, 1f);
     }
 
+    /**
+     * Called after initialization to set up debug information on the screen.
+     * This method creates and positions text elements to display frame and memory usage information.
+     *
+     * @see RoguesOdyssey#startGame()
+     */
     public void postInit() {
         this.debugText = new Text(-9.5f, 9.5f, .5f, TextComponent.text("No data on last frame."));
         this.debugText.setDrawStyle(Text.DrawStyle.ABSOLUTE);
@@ -53,14 +69,30 @@ public class GameRenderer {
         this.ramText.setDrawStyle(Text.DrawStyle.ABSOLUTE);
     }
 
+    /**
+     * @return the currently active {@link GameScreen}, or {@code null} if no screen is active.
+     */
     public GameScreen getCurrentScreen() {
         return currentScreen;
     }
 
+    /**
+     * Sets the current screen to the specified {@link GameScreen}.
+     *
+     * @param newScreen the new screen to be displayed.
+     * @see GameRenderer#setCurrentScreen(GameScreen, float)
+     */
     public void setCurrentScreen(GameScreen newScreen) {
         this.setCurrentScreen(newScreen, 0f);
     }
 
+    /**
+     * Sets the current screen to the specified {@link GameScreen} with an optional fade transition.
+     * If the new screen is an overlay, it preserves the underlying screen for rendering.
+     *
+     * @param newScreen  the new screen to be displayed.
+     * @param fadeFactor the transition factor for screen changes (currently not used).
+     */
     public void setCurrentScreen(GameScreen newScreen, float fadeFactor) {
         //noinspection AssignmentUsedAsCondition
         if ((this.shouldOverlay = newScreen.isOverlayScreen() && currentScreen != null)) {
@@ -70,10 +102,13 @@ public class GameRenderer {
         this.currentScreen = newScreen;
     }
 
+    /**
+     * Renders the current game screen. It also displays
+     * debug information if enabled.
+     */
     public void render(float deltaTime) {
         if (this.currentScreen == null) return;
 
-        //TODO: Maybe overlay screens should continue to render the underlying screen but just make it non-interactive.
         if (shouldOverlay) overlayingScreen.draw(projectionMatrix, deltaTime);
         this.currentScreen.draw(projectionMatrix, deltaTime);
 
@@ -82,16 +117,15 @@ public class GameRenderer {
             this.frameInfoText.draw(null, 0f, 0f, projectionMatrix, deltaTime);
             this.ramText.draw(null, 0f, 0f, projectionMatrix, deltaTime);
         }
-
     }
 
     /**
-     * Renderer callback that is called when the game window is resized. Readjusts the viewport and the {@link GameRenderer#projectionMatrix}
-     * <p>
-     * Should only be invoked by the GL callback: {@link org.lwjgl.glfw.GLFW#glfwSetWindowSizeCallback(long, GLFWWindowSizeCallbackI)}
+     * Adjusts the rendering viewport and projection matrix when the game window is resized.
+     * This method is triggered by the GLFW window size callback.
      *
      * @param newWidth  the new window width.
      * @param newHeight the new window height.
+     * @see org.lwjgl.glfw.GLFW#glfwSetWindowSizeCallback(long, GLFWWindowSizeCallbackI)
      */
     public void windowResized(int newWidth, int newHeight) {
         this.lastKnownWindowWidth = newWidth;
@@ -100,9 +134,16 @@ public class GameRenderer {
         final float ratio = newWidth / (float) newHeight;
 
         glViewport(0, 0, newWidth, newHeight);
-        this.projectionMatrix.setOrtho(-10f * ratio, 10f * ratio, -10f, 10f, -10, 10);
+        this.projectionMatrix.setOrtho(-10f * ratio, 10f * ratio, -10f, 10f, -1, 1);
     }
 
+    /**
+     * Handles mouse input events and passes them to the active {@link InputListeningGameScreen}
+     *
+     * @param mouseButton the mouse button that was pressed or released.
+     * @param modifiers   any modifier keys that were held during the event.
+     * @param action      the type of action (press/release)
+     */
     public void handleMouseInput(int mouseButton, int modifiers, int action) {
         if (!(this.currentScreen instanceof InputListeningGameScreen ilGameScreen)) return;
 
@@ -129,13 +170,33 @@ public class GameRenderer {
         ilGameScreen.mouseClicked(mouseButton, modifiers, action, this.projectionMatrix, new Point2D(mouseX, mouseY));
     }
 
-    public void handleKeyboardInput(int keycode, int modifiers, int action) {
+    /**
+     * Handles keyboard input events and passes them to the active {@link InputListeningGameScreen}.
+     * It also toggles debug info when F1 is pressed.
+     *
+     * @param keycode    the key that was pressed or released.
+     * @param modifiers  any modifier keys that were held during the event.
+     * @param action     the type of action (press/release)
+     *
+     * @return always {@code false}, a flag for the {@link zodalix.ro.engine.input.GameInputHandler} to not stop but pass the event to other listeners.
+     */
+    public boolean handleKeyboardInput(int keycode, int modifiers, int action) {
         this.showDebugInfo = action != GLFW_RELEASE && keycode == GLFW_KEY_F1;
 
-        if (!(this.currentScreen instanceof InputListeningGameScreen ilGameScreen)) return;
+        if (!(this.currentScreen instanceof InputListeningGameScreen ilGameScreen)) return false;
         ilGameScreen.keyboardInput(keycode, modifiers, action);
+
+        return false;
     }
 
+    /**
+     * Displays the FPS, frame-time, and render-time information on the screen.
+     * This is part of the debug information displayed when debug mode is enabled.
+     *
+     * @param fps         the current frames per second.
+     * @param frametime   the time taken to render the previous frame in milliseconds.
+     * @param renderDiff  the time taken to render the current frame in milliseconds.
+     */
     public void displayFPS(long fps, long frametime, long renderDiff) {
         debugText.setText(TextComponent.composedText("<cyan shadow>{} FPS", fps));
         frameInfoText.setText(TextComponent.composedText("<white shadow>Frame-time: <cyan shadow>{}ms <white shadow>Rendering took: <pink bold>{}ms", frametime, renderDiff));
@@ -155,4 +216,10 @@ public class GameRenderer {
     }
 
 
+    @Override
+    public void tick(float deltaTime) {
+
+        if(this.currentScreen == null) return;
+        this.currentScreen.tick(deltaTime);
+    }
 }

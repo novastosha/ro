@@ -1,30 +1,39 @@
 package zodalix.ro.game.dungeon;
 
-import java.util.Random;
+import org.jetbrains.annotations.NotNull;
+import zodalix.ro.engine.base.Tickable;
+import zodalix.ro.game.entity.Player;
 
-public class Dungeon {
+public class Dungeon implements Tickable {
 
-    public static final class Generator {
-        private final Random random;
+    private final Player player;
 
-        private Generator(long seed) {
-            this.random = new Random(seed);
-
-        }
+    Dungeon() {
+        this.player = new Player();
     }
 
-    public Dungeon() {
 
-    }
-
-    public static Generator generator() {
+    public static DungeonGenerator generator() {
         long time = System.currentTimeMillis();
         long sign = time % 2 == 0 ? 1L : -1L;
 
         return Dungeon.generator(sign * time);
     }
 
-    public static Generator generator(long seed) {
-        return new Generator(seed);
+    public static DungeonGenerator generator(long seed) {
+        return new DungeonGenerator(seed);
+    }
+
+    public Player getPlayer() {
+        return this.player;
+    }
+
+    public static @NotNull Dungeon dummyDungeon() {
+        return new Dungeon();
+    }
+
+    @Override
+    public void tick(float deltaTime) {
+        this.player.tick(deltaTime);
     }
 }

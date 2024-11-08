@@ -16,6 +16,10 @@ public class NamespacedKey implements CharSequence {
         this.path = path;
     }
 
+    protected NamespacedKey(NamespacedKey base) {
+        this(base.namespace, base.path);
+    }
+
     @Override
     public int length() {
         return toString().length();
@@ -57,7 +61,7 @@ public class NamespacedKey implements CharSequence {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 

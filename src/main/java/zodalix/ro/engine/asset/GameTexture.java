@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.joml.Matrix4f;
 
 import org.lwjgl.BufferUtils;
+import zodalix.ro.engine.asset.provider.AssetProvider;
 import zodalix.ro.game.RoguesOdyssey;
 import zodalix.ro.engine.utils.position.Point2D;
 import zodalix.ro.engine.utils.NamespacedKey;
@@ -25,14 +26,14 @@ public class GameTexture {
     private static final Logger logger = LogManager.getLogger("Assets");
 
     private final NamespacedKey key;
-    private final int glTextureId;
+    private transient final int glTextureId;
     private final int width, height;
 
     GameTexture(NamespacedKey key) {
         this.key = key;
 
         var resource = RoguesOdyssey.instance().assetManager.provideAsset("/assets/" + key.toString().replaceAll(":", "/") + ".png");
-        assert resource != null : "Couldn't find resource.";
+        if (resource == null) throw AssetProvider.RESOURCE_NOT_FOUND;
 
         byte[] imageBytes;
         try (resource) {
@@ -102,7 +103,7 @@ public class GameTexture {
                 }
             }
 
-        drawDefault0(am, position, 0, 0, getWidth(), getHeight(), width, height, scale, projectionMatrix, colorTransform,rotation);
+        drawDefault0(am, position, 0, 0, getWidth(), getHeight(), width, height, scale, projectionMatrix, colorTransform, rotation);
     }
 
     protected void drawDefault0(AssetManager am, Point2D position, float beginWidth, float beginHeight, float endWidth, float endHeight, float width, float height, float scale, Matrix4f projectionMatrix, Color colorTransform, float rotationDegrees) {
@@ -140,10 +141,10 @@ public class GameTexture {
             mvpMatrix.mul(modelMatrix, scratch);
 
             int mvpMatrixId = glGetUniformLocation(shaderProgram, "uMVPMatrix");
-            int rotationHandle = glGetUniformLocation(shaderProgram,"uRotation");
+            int rotationHandle = glGetUniformLocation(shaderProgram, "uRotation");
 
             glUniformMatrix4fv(mvpMatrixId, false, scratch.get(new float[16]));
-            glUniform1f(rotationHandle,(float) Math.toRadians(rotationDegrees));
+            glUniform1f(rotationHandle, (float) Math.toRadians(rotationDegrees));
 
             glEnableVertexAttribArray(positionHandle);
             glEnableVertexAttribArray(texCoordHandle);

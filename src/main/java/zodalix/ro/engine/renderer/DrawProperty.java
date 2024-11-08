@@ -1,6 +1,7 @@
 package zodalix.ro.engine.renderer;
 
 import zodalix.ro.engine.asset.GameTexture;
+import zodalix.ro.game.RoguesOdyssey;
 
 import java.awt.Color;
 
@@ -59,6 +60,17 @@ public sealed interface DrawProperty permits DrawProperty.ColorTransform, DrawPr
 
     static DrawProperty dimensions(GameTexture texture) {
         return new Dimensions(texture.getWidth(), texture.getHeight());
+    }
+
+    /**
+     * Forcibly draws this texture at the window's dimensions to fully fit the screen.
+     *
+     * @implNote This method accesses {@link GameRenderer} to get the window's current dimensions. Do not invoke this method before initalization.
+     * @return an instance of {@link Dimensions} set to the window's dimensions.
+     */
+    static DrawProperty stretch() {
+        return new Dimensions(RoguesOdyssey.instance().renderer.getLastKnownWindowWidth(),
+                                RoguesOdyssey.instance().renderer.getLastKnownWindowHeight());
     }
 
     static DrawProperty[] of(DrawProperty... properties) {

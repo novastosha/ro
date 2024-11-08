@@ -1,5 +1,7 @@
 package zodalix.ro.engine.utils.position;
 
+import org.jetbrains.annotations.Contract;
+
 public non-sealed class MutablePosition implements Position {
     private float x,y;
 
@@ -24,5 +26,17 @@ public non-sealed class MutablePosition implements Position {
 
     public void setY(float y) {
         this.y = y;
+    }
+
+    @Contract(mutates = "this")
+    public void setTo(Point2D point) {
+        this.x = point.x;
+        this.y = point.y;
+    }
+
+    @Contract(mutates = "this")
+    public void setTo(Position other) {
+        this.x = other.x();
+        this.y = other.y();
     }
 }

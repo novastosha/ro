@@ -20,7 +20,7 @@ public class Tree implements DrawableEntity, InteractiveEntity {
     }
 
     @Override
-    public void tick() {
+    public void tick(float deltaTime) {
 
     }
 

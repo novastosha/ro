@@ -2,7 +2,9 @@ package zodalix.ro.engine.asset;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import org.jetbrains.annotations.Contract;
 import org.joml.Matrix4f;
+import zodalix.ro.engine.asset.provider.AssetProvider;
 import zodalix.ro.game.RoguesOdyssey;
 import zodalix.ro.engine.utils.position.Point2D;
 import zodalix.ro.engine.utils.NamespacedKey;
@@ -18,12 +20,11 @@ public class AnimatedGameTexture extends GameTexture {
     private final int totalFrames, widthPerFrame;
     private final float frameDuration;
 
-
     AnimatedGameTexture(NamespacedKey key) {
         super(key);
 
         var resource = RoguesOdyssey.instance().assetManager.provideAsset("/assets/" + key.toString().replaceAll(":", "/") + ".json");
-        assert resource != null : "Couldn't find resource.";
+        if (resource == null) throw AssetProvider.RESOURCE_NOT_FOUND;
 
         try (resource; final var reader = new InputStreamReader(resource)) {
             var root = GSON.fromJson(reader, JsonObject.class);
@@ -75,10 +76,12 @@ public class AnimatedGameTexture extends GameTexture {
     }
 
     @Override
+    @Contract("_, _, _, _ -> fail")
     public void drawDefault(AssetManager am, Point2D position, Matrix4f projectionMatrix, DrawProperty... drawProperties) {
         throw new UnsupportedOperationException("Animated Textures must be drawn using a DrawInstance");
     }
 
+    @Contract("-> new")
     public DrawInstance getDrawInstance() {
         return new DrawInstance();
     }

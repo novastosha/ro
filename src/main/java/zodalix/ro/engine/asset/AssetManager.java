@@ -1,5 +1,6 @@
 package zodalix.ro.engine.asset;
 
+import org.jetbrains.annotations.Nullable;
 import zodalix.ro.game.RoguesOdyssey;
 
 import zodalix.ro.engine.asset.provider.AssetProvider;
@@ -52,6 +53,11 @@ public class AssetManager {
         }
 
         return this.loadedShaders.get(key);
+    }
+
+    @Nullable
+    public InputStream getInputStream(NamespacedKey path) {
+        return this.provideAsset("/assets/" + path.toString().replaceAll(":", "/"));
     }
 
     InputStream provideAsset(String path) {

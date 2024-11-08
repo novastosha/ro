@@ -6,9 +6,13 @@ import org.joml.Vector2f;
 import zodalix.ro.engine.utils.position.Point2D;
 import zodalix.ro.engine.renderer.GameRenderer;
 
+/**
+ * A utility static class that provides functions to perform various operations related to vectors, matrix transformation.
+ *
+ * @see RenderingUtils#transformPoint(float, GameRenderer)
+ * @see RenderingUtils#transformCoordinates(Vector2f, GameRenderer)
+ */
 public final class RenderingUtils {
-
-    public static final float SCALING_CONSTANT = 1 / 10f;
 
     private RenderingUtils() { throw new IllegalStateException(RenderingUtils.class.getCanonicalName()+" cannot be instanced!"); }
 

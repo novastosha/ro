@@ -2,7 +2,6 @@ package zodalix.ro.engine.asset;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import zodalix.ro.game.RoguesOdyssey;
 import zodalix.ro.engine.utils.NamespacedKey;
 
 
@@ -18,8 +17,8 @@ public class GameShader {
 
     private final NamespacedKey key;
 
-    public final int fragmentShaderId, vertexShaderId;
-    public final int glShaderProgram;
+    public transient final int fragmentShaderId, vertexShaderId;
+    public transient final int glShaderProgram;
 
     GameShader(NamespacedKey key, final AssetManager am) {
         this.key = key;

@@ -25,7 +25,7 @@ public class Cloud implements DrawableEntity {
     }
 
     @Override
-    public void tick() {
+    public void tick(float deltaTime) {
 
     }
 

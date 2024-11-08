@@ -1,11 +1,13 @@
 package zodalix.ro.game;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
 import zodalix.ro.engine.asset.AssetManager;
 import zodalix.ro.engine.input.GameInputHandler;
 import zodalix.ro.engine.renderer.GameRenderer;
+import zodalix.ro.game.dungeon.Dungeon;
 import zodalix.ro.game.gui.TitleScreen;
 
 import java.nio.IntBuffer;
@@ -16,6 +18,18 @@ import static org.lwjgl.opengl.GL33.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
+/**
+ * The main entry point for the "Rogue's Odyssey" game. This class manages the game's lifecycle, including
+ * initializing game resources, setting up window and input handlers, rendering, and starting the main game loop.
+ * It uses {@link GLFW} for window management and input handling, and OpenGL for rendering.
+ * <p>
+ * This is a singleton class, ensuring that only one instance of the game exists at any given time.
+ *
+ * @see GameRenderer
+ * @see AssetManager
+ * @see GameInputHandler
+ * @see <a href="https://www.glfw.org/">GLFW Official Documentation</a>
+ */
 public final class RoguesOdyssey {
 
     private static RoguesOdyssey instance;
@@ -25,6 +39,12 @@ public final class RoguesOdyssey {
     public final GameRenderer renderer;
     public final GameInputHandler inputHandler;
 
+    private volatile Dungeon dungeon;
+
+    /**
+     * Private constructor to initialize the game instance. This method sets up the GLFW window, the OpenGL context,
+     * and the main components such as the {@link GameRenderer}, {@link AssetManager}, and {@link GameInputHandler}.
+     */
     private RoguesOdyssey() {
 
         this.assetManager = new AssetManager(this);
@@ -91,6 +111,10 @@ public final class RoguesOdyssey {
         RoguesOdyssey.instance = new RoguesOdyssey();
     }
 
+    /**
+     * Starts the game by creating OpenGL capabilities, setting up the main game loop, and configuring GLFW callbacks.
+     * This method continuously updates the game state, renders the game, and handles input.
+     */
     public void startGame() {
         GL.createCapabilities();
 
@@ -102,29 +126,21 @@ public final class RoguesOdyssey {
         this.renderer.postInit();
         this.renderer.windowResized(800, 600);
 
+        {
+            this.inputHandler.registerKeybinding(
+                    this.inputHandler.defaultKeymap(),
+                    GameInputHandler.MOVE_LEFT,
+                    GameInputHandler.MOVE_RIGHT,
+                    GameInputHandler.JUMP,
+                    GameInputHandler.ESCAPE
+            );
+        }
+
         // Set the game callbacks.
         {
-            glfwSetWindowSizeCallback(windowHandle, new GLFWWindowSizeCallback() {
-                @Override
-                public void invoke(long window, int argWidth, int argHeight) {
-                    RoguesOdyssey.this.renderer.windowResized(argWidth, argHeight);
-                }
-            });
-
-            glfwSetMouseButtonCallback(windowHandle, new GLFWMouseButtonCallback() {
-                @Override
-                public void invoke(long window, int button, int action, int mods) {
-                    RoguesOdyssey.this.inputHandler.mouseInputReceived(button, mods, action);
-                }
-            });
-
-            glfwSetKeyCallback(windowHandle, new GLFWKeyCallback() {
-                @Override
-                public void invoke(long window, int key, int scancode, int action, int mods) {
-                    RoguesOdyssey.this.inputHandler.keyboardInputReceived(key, mods, action);
-                }
-            });
-
+            glfwSetWindowSizeCallback(windowHandle, (_, argWidth, argHeight) -> RoguesOdyssey.this.renderer.windowResized(argWidth, argHeight));
+            glfwSetMouseButtonCallback(windowHandle, (_, button, action, mods) -> RoguesOdyssey.this.inputHandler.mouseInputReceived(button, mods, action));
+            glfwSetKeyCallback(windowHandle, (_, key, _, action, mods) -> RoguesOdyssey.this.inputHandler.keyboardInputReceived(key, mods, action));
         }
 
         renderer.setCurrentScreen(new TitleScreen());
@@ -148,6 +164,10 @@ public final class RoguesOdyssey {
             long renderDiff;
             {
                 long renderStart = System.currentTimeMillis();
+
+                this.renderer.tick(deltaTime);
+                if (this.dungeon != null) this.dungeon.tick(deltaTime);
+
                 this.renderer.render(deltaTime); // Pass deltaTime to the render method
                 renderDiff = System.currentTimeMillis() - renderStart;
             }
@@ -166,5 +186,19 @@ public final class RoguesOdyssey {
                 fpsLastTime += 1000;
             }
         }
+    }
+
+    @Nullable
+    public Dungeon getCurrentDungeon() {
+        return this.dungeon;
+    }
+
+    /**
+     * @param newDungeon the new dungeon to set.
+     * @return {@code this.dungeon}
+     * @implNote The rest of the implementation is left to the caller, such as switching screens, etc...
+     */
+    public Dungeon setDungeon(@Nullable Dungeon newDungeon) {
+        return this.dungeon = newDungeon;
     }
 }

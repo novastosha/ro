@@ -1,0 +1,6 @@
+{
+  "ro:key/move_right": 68,
+  "ro:key/move_left": 65,
+  "ro:key/jump": 32,
+  "ro:key/escape": 256
+}

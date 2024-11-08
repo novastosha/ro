@@ -14,20 +14,20 @@ import zodalix.ro.engine.screen.ui.elements.text.TextComponent;
 
 import java.util.function.Consumer;
 
-public class Button<S extends Button.Style> implements GUIElement {
+public class Button implements GUIElement {
 
     private static final float BUTTON_SCALE = .5f; //.375f;
 
     private final Consumer<Event> eventConsumer;
 
-    private final S style;
+    private final Style style;
     private float x, y;
 
-    public Button(S style, float x, float y) {
+    public Button(Style style, float x, float y) {
         this(style, x, y, null);
     }
 
-    public Button(S style, float x, float y, Consumer<Event> eventConsumer) {
+    public Button(Style style, float x, float y, Consumer<Event> eventConsumer) {
         this.style = style;
         this.x = x;
         this.y = y;
@@ -37,7 +37,7 @@ public class Button<S extends Button.Style> implements GUIElement {
         if (style instanceof Style.Default def) def.textElement.changePosition(new Point2D(x, y));
     }
 
-    public S getStyle() {
+    public Style getStyle() {
         return style;
     }
 
