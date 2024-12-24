@@ -2,6 +2,8 @@ package zodalix.ro.engine.utils.position;
 
 import org.jetbrains.annotations.Contract;
 
+import java.util.Objects;
+
 public non-sealed class MutablePosition implements Position {
     private float x,y;
 
@@ -38,5 +40,17 @@ public non-sealed class MutablePosition implements Position {
     public void setTo(Position other) {
         this.x = other.x();
         this.y = other.y();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Position that)) return false;
+        return Float.compare(x, that.x()) == 0 && Float.compare(y, that.y()) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
     }
 }

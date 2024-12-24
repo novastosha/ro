@@ -3,8 +3,10 @@ package zodalix.ro.engine.asset;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import zodalix.ro.engine.asset.provider.AssetProvider;
+import zodalix.ro.engine.utils.BoundingBox;
 import zodalix.ro.game.RoguesOdyssey;
 import zodalix.ro.engine.utils.position.Point2D;
 import zodalix.ro.engine.utils.NamespacedKey;
@@ -47,7 +49,7 @@ public class AnimatedGameTexture extends GameTexture {
         private int currentFrame = 0;
         private float elapsedTime = 0f;
 
-        public void draw(AssetManager am, Point2D position, Matrix4f projectionMatrix, DrawProperty... drawProperties) {
+        public void draw(AssetManager am, Point2D position, Matrix4f projectionMatrix, @Nullable BoundingBox bb, DrawProperty... drawProperties) {
             float scale = 1f, rotation = 0;
             Color colorTransform = null;
 
@@ -60,7 +62,7 @@ public class AnimatedGameTexture extends GameTexture {
                 }
 
             float frameHeight = getHeight() / (float) totalFrames;
-            AnimatedGameTexture.super.drawDefault0(am, position, 0, frameHeight * currentFrame, getWidth(), frameHeight * ((float) currentFrame + 1f), widthPerFrame, getHeight(), scale, projectionMatrix, colorTransform, rotation);
+            AnimatedGameTexture.super.drawDefault0(am, position, 0, frameHeight * currentFrame, getWidth(), frameHeight * ((float) currentFrame + 1f), widthPerFrame, getHeight(), scale, projectionMatrix, colorTransform, rotation, bb);
         }
 
         public void tick(float deltaTime) {
@@ -77,7 +79,7 @@ public class AnimatedGameTexture extends GameTexture {
 
     @Override
     @Contract("_, _, _, _ -> fail")
-    public void drawDefault(AssetManager am, Point2D position, Matrix4f projectionMatrix, DrawProperty... drawProperties) {
+    public void drawDefault(AssetManager am, Point2D position, Matrix4f projectionMatrix, @Nullable BoundingBox bb, DrawProperty... drawProperties) {
         throw new UnsupportedOperationException("Animated Textures must be drawn using a DrawInstance");
     }
 

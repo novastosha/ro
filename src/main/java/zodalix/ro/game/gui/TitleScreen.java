@@ -55,8 +55,8 @@ public class TitleScreen extends GUIScreen {
                             .renderer
                             .setCurrentScreen(new DungeonScreen(dung)); // FIXME: REMOVE "dummyDungeon"
                 }
-        ); //TODO: Figure out a better way to handle button interactions. (or input in general)
-           //TODO: Really need to figure out a better way for interactions this is bullshit.
+        );
+
     }
 
     private GUIElement continueGameButton(float x, float y) {

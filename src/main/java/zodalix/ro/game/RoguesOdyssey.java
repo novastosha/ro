@@ -161,12 +161,13 @@ public final class RoguesOdyssey {
 
             this.inputHandler.checkForClickHold();
 
+
+            this.renderer.tick(deltaTime);
+            if (this.dungeon != null) this.dungeon.tick(deltaTime);
+
             long renderDiff;
             {
                 long renderStart = System.currentTimeMillis();
-
-                this.renderer.tick(deltaTime);
-                if (this.dungeon != null) this.dungeon.tick(deltaTime);
 
                 this.renderer.render(deltaTime); // Pass deltaTime to the render method
                 renderDiff = System.currentTimeMillis() - renderStart;

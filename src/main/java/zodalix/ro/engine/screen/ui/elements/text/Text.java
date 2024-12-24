@@ -115,6 +115,9 @@ public class Text implements GUIElement {
 
     @Override
     public void draw(GUIScreen screen, float cursorX, float cursorY, Matrix4f projectionMatrix, float deltaTime) {
+        if(bb != null && !bb.isScreenVisible(this.x, this.y, projectionMatrix))
+            return;
+
         var transformedX = RenderingUtils.transformPoint(x, RoguesOdyssey.instance().renderer);
         var centeredStartDraw = (this.bb.leftX() + transformedX) + (this.scale * this.scale);
 

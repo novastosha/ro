@@ -2,7 +2,9 @@ package zodalix.ro.engine.utils;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector4f;
 import zodalix.ro.engine.renderer.GameRenderer;
+import org.joml.Matrix4f;
 
 /**
  * A record representing an axis-aligned bounding box (AABB) in a 2D space, defined by its left, right, top,
@@ -115,31 +117,37 @@ public record BoundingBox(float leftX, float rightX, float topY, float bottomY) 
     }
 
     /**
-     * Checks if this bounding box is visible within the game window, given a {@link GameRenderer} object
-     * for screen dimensions.
+     * Checks if this bounding box is visible within the game window
      *
-     * @param x         The X coordinate of the bounding box's origin.
-     * @param y         The Y coordinate of the bounding box's origin.
-     * @param renderer  The {@link GameRenderer} object that provides window dimensions.
+     * @param x                The X coordinate of the bounding box's origin.
+     * @param y                The Y coordinate of the bounding box's origin.
+     * @param projectionMatrix The projection to calculate visibility against. Usually the {@code projectionMatrix} or {@code combinedMatrix} derived from the {@link GameRenderer}
      * @return {@code true} if the bounding box is visible on the screen; otherwise, {@code false}.
      */
-    public boolean isScreenVisible(float x, float y, GameRenderer renderer) {
-        var ratio = renderer.getLastKnownWindowWidth() / (float) renderer.getLastKnownWindowHeight();
-        if(Float.isNaN(ratio) || ratio == 0) return true; // This occurs when the screen is minimized.
+    public boolean isScreenVisible(float x, float y, @NotNull Matrix4f projectionMatrix) {
+        Vector4f[] corners = {
+                new Vector4f(x + this.leftX(), y + this.bottomY(), 0, 1), // Bottom-left
+                new Vector4f(x + this.rightX(), y + this.bottomY(), 0, 1), // Bottom-right
+                new Vector4f(x + this.leftX(), y + this.topY(), 0, 1), // Top-left
+                new Vector4f(x + this.rightX(), y + this.topY(), 0, 1) // Top-right
+        };
 
-        var maxX = 9f * ratio;
-        var maxY = 9f;
+        boolean visible = false;
 
-        float leftX = Math.abs(x + this.leftX());
-        float rightX = Math.abs(x + this.rightX());
+        for (Vector4f corner : corners) {
+            projectionMatrix.transform(corner);
+            if (corner.w != 0) {
+                corner.x /= corner.w;
+                corner.y /= corner.w;
+                corner.z /= corner.w;
+            }
 
-        boolean visibleOnX = leftX < maxX || rightX < maxX;
+            if (corner.x >= -1 && corner.x <= 1 && corner.y >= -1 && corner.y <= 1 && corner.z >= -1 && corner.z <= 1) {
+                visible = true;
+                break; // If any corner is visible, the bounding box is visible
+            }
+        }
 
-        float topY = Math.abs(y + this.topY());
-        float bottomY = Math.abs(y + this.bottomY());
-
-        boolean visibleOnY = topY < maxY || bottomY < maxY;
-
-        return visibleOnX && visibleOnY;
+        return visible;
     }
 }

@@ -53,10 +53,11 @@ final class BackgroundScreen implements GameScreen {
                 RoguesOdyssey.instance().assetManager,
                 Point2D.ZERO,
                 projectionMatrix,
+                null,
                 DrawProperty.stretch()
         );
 
-        tickClouds(deltaTime);
+        tickClouds(projectionMatrix,deltaTime);
 
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_BLEND);
@@ -65,7 +66,7 @@ final class BackgroundScreen implements GameScreen {
         glDisable(GL_BLEND);
     }
 
-    private void tickClouds(float deltaTime) {
+    private void tickClouds(Matrix4f projectionMatrix,float deltaTime) {
         final float x = RenderingUtils.transformPoint(-9.5f, RoguesOdyssey.instance().renderer);
 
         int index = 0;
@@ -78,7 +79,7 @@ final class BackgroundScreen implements GameScreen {
             pos.setX(pos.x() + (0.25f * deltaTime * (isFast ? 1.75f : 1)));
             var renderer = RoguesOdyssey.instance().renderer;
 
-            if (!cloud.boundingBox().isScreenVisible(pos.x(), pos.y(), renderer)) {
+            if (!cloud.boundingBox().isScreenVisible(pos.x(), pos.y(), projectionMatrix)) {
                 pos.setX(x + (.5f + (random.nextBoolean() ? +random.nextFloat() : -random.nextFloat())));
                 pos.setY(7.5f + (random.nextBoolean() ? -.75f : +1f));
             }

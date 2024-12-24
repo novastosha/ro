@@ -1,9 +1,11 @@
 package zodalix.ro.engine.renderer;
 
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFWWindowSizeCallbackI;
 import zodalix.ro.engine.base.Tickable;
+import zodalix.ro.engine.screen.CameraAwareGameScreen;
 import zodalix.ro.game.RoguesOdyssey;
 import zodalix.ro.engine.utils.position.Point2D;
 import zodalix.ro.engine.screen.GameScreen;
@@ -30,7 +32,7 @@ public class GameRenderer implements Tickable {
     private Text debugText, ramText, frameInfoText;
     private boolean showDebugInfo = false;
 
-    private final Matrix4f projectionMatrix;
+    private final Matrix4f projectionMatrix, viewMatrix, renderMatrix;
     private boolean shouldOverlay;
     private GameScreen currentScreen, overlayingScreen;
 
@@ -50,6 +52,9 @@ public class GameRenderer implements Tickable {
 
         this.projectionMatrix = new Matrix4f()
                 .setOrtho(-10.0f, 10.0f, -10.0f, 10.0f, -1f, 1f);
+
+        this.renderMatrix = new Matrix4f();
+        this.viewMatrix = new Matrix4f();
     }
 
     /**
@@ -94,12 +99,17 @@ public class GameRenderer implements Tickable {
      * @param fadeFactor the transition factor for screen changes (currently not used).
      */
     public void setCurrentScreen(GameScreen newScreen, float fadeFactor) {
+
+
         //noinspection AssignmentUsedAsCondition
         if ((this.shouldOverlay = newScreen.isOverlayScreen() && currentScreen != null)) {
             this.overlayingScreen = this.currentScreen;
         }
 
         this.currentScreen = newScreen;
+        if(this.currentScreen instanceof CameraAwareGameScreen camAware)
+            this.recalculateMatrices(camAware.camera());
+
     }
 
     /**
@@ -109,8 +119,17 @@ public class GameRenderer implements Tickable {
     public void render(float deltaTime) {
         if (this.currentScreen == null) return;
 
-        if (shouldOverlay) overlayingScreen.draw(projectionMatrix, deltaTime);
+        if (shouldOverlay) {
+            overlayingScreen.draw(projectionMatrix, deltaTime);
+            if(this.overlayingScreen instanceof CameraAwareGameScreen camAwareOverlay) {
+                camAwareOverlay.drawCamera(renderMatrix,deltaTime);
+            } // Overlaying might be removed soon.
+        }
+
         this.currentScreen.draw(projectionMatrix, deltaTime);
+        if(this.currentScreen instanceof CameraAwareGameScreen cameraAwareGameScreen) {
+            cameraAwareGameScreen.drawCamera(renderMatrix, deltaTime);
+        }
 
         if (showDebugInfo) {
             this.debugText.draw(null, 0f, 0f, projectionMatrix, deltaTime);
@@ -131,10 +150,8 @@ public class GameRenderer implements Tickable {
         this.lastKnownWindowWidth = newWidth;
         this.lastKnownWindowHeight = newHeight;
 
-        final float ratio = newWidth / (float) newHeight;
-
         glViewport(0, 0, newWidth, newHeight);
-        this.projectionMatrix.setOrtho(-10f * ratio, 10f * ratio, -10f, 10f, -1, 1);
+        this.recalculateMatrices(this.currentScreen instanceof CameraAwareGameScreen cA ? cA.camera() : null);
     }
 
     /**
@@ -222,4 +239,29 @@ public class GameRenderer implements Tickable {
         if(this.currentScreen == null) return;
         this.currentScreen.tick(deltaTime);
     }
+
+    void cameraChanged(Camera camera) {
+        if(!(this.currentScreen instanceof CameraAwareGameScreen camAware) || camAware.camera() != camera) return;
+
+        this.recalculateMatrices(camera);
+    }
+
+    private void recalculateMatrices(@Nullable Camera camera) {
+        float aspectRatio = lastKnownWindowWidth / (float) lastKnownWindowHeight;
+
+        if (camera != null) {
+            float scale = 10.0f / (float) Math.tan(Math.toRadians(camera.getFOV() / 2.0f));
+            float left = -scale * aspectRatio;
+            float right = scale * aspectRatio;
+            float bottom = -scale;
+            float top = scale;
+
+            this.projectionMatrix.identity().setOrtho(left, right, bottom, top, -1.0f, 1.0f);
+            this.viewMatrix.identity().translate(-camera.getPosition().x() * aspectRatio, -camera.getPosition().y(), 0.0f);
+
+            this.renderMatrix.set(projectionMatrix).mul(viewMatrix);
+        } else
+            this.renderMatrix.setOrtho(-10f * aspectRatio, 10f * aspectRatio, -10f, 10f, -1, 1);
+
+        this.projectionMatrix.setOrtho(-10f * aspectRatio, 10f * aspectRatio, -10f, 10f, -1, 1);    }
 }

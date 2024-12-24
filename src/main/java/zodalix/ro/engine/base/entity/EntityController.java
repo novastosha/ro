@@ -11,6 +11,6 @@ public class EntityController {
         return this.entity;
     }
 
-    public void checkInput(int releasedKey) {
+    public void checkInput(int releasedKey, float deltaTime) {
     }
 }

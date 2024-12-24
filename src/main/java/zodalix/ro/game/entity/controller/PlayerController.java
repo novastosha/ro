@@ -14,22 +14,22 @@ public class PlayerController extends EntityController {
     }
 
     public static final float BASE_HORIZONTAL_MOVEMENT_FACTOR = 10f,
-                              BASE_VERTICAL_MOVEMENT_FACTOR = BASE_HORIZONTAL_MOVEMENT_FACTOR * 5;
+                              BASE_VERTICAL_MOVEMENT_FACTOR = 12.5f;
 
     @Override
-    public void checkInput(int releasedKey) {
+    public void checkInput(int releasedKey,float deltaTime) {
         var player = (Player) this.getControlledEntity(); // Too lazy to give "it" its own field.
 
         if (MOVE_RIGHT.isDown()) {
-            player.move(PlayerController.Movement.RIGHT, BASE_HORIZONTAL_MOVEMENT_FACTOR);
+            player.move(PlayerController.Movement.RIGHT, BASE_HORIZONTAL_MOVEMENT_FACTOR * deltaTime);
         }
 
         if (MOVE_LEFT.isDown()) {
-            player.move(Movement.LEFT, BASE_HORIZONTAL_MOVEMENT_FACTOR);
+            player.move(Movement.LEFT, BASE_HORIZONTAL_MOVEMENT_FACTOR * deltaTime);
         }
 
         if (JUMP.isDown() && !this.jumpingHeld) { // Check if on-ground too
-            player.move(Movement.UP, BASE_VERTICAL_MOVEMENT_FACTOR);
+            player.move(Movement.UP, BASE_VERTICAL_MOVEMENT_FACTOR / 10f);
             this.jumpingHeld = true;
         } else if (JUMP.wasDown(releasedKey)) this.jumpingHeld = false;
     }

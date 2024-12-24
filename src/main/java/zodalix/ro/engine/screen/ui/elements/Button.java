@@ -1,5 +1,6 @@
 package zodalix.ro.engine.screen.ui.elements;
 
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
 import zodalix.ro.game.RoguesOdyssey;
@@ -87,7 +88,7 @@ public class Button implements GUIElement {
             }
 
             case Style.Textured texturedStyle ->
-                    texturedStyle.draw(x, y, this.isHoveredOver(), cursorX, cursorY, projectionMatrix);
+                    texturedStyle.draw(x, y, this.isHoveredOver(), cursorX, cursorY, projectionMatrix, this.boundingBox());
         }
     }
 
@@ -138,9 +139,9 @@ public class Button implements GUIElement {
                 this.height = height;
             }
 
-            public void draw(float x, float y, boolean hoveredOver, float cursorX, float cursorY, Matrix4f projectionMatrix) {
+            public void draw(float x, float y, boolean hoveredOver, float cursorX, float cursorY, Matrix4f projectionMatrix, @Nullable BoundingBox bb) {
                 final var am = RoguesOdyssey.instance().assetManager;
-                asset.drawDefault(am, new Point2D(x, y), projectionMatrix, DrawProperty.dimensions(width, height));
+                asset.drawDefault(am, new Point2D(x, y), projectionMatrix, bb, DrawProperty.dimensions(width, height));
             }
         }
     }
@@ -164,6 +165,6 @@ public class Button implements GUIElement {
                 :
                 am.getTexture(NamespacedKey.getDefault("textures/buttons/button"));
 
-        texture.drawDefault(am, new Point2D(x, y), projectionMatrix, DrawProperty.scale(BUTTON_SCALE), DrawProperty.dimensions(neededWidth, neededHeight));
+        texture.drawDefault(am, new Point2D(x, y), projectionMatrix, this.boundingBox(), DrawProperty.scale(BUTTON_SCALE), DrawProperty.dimensions(neededWidth, neededHeight));
     }
 }

@@ -2,6 +2,8 @@ package zodalix.ro.engine.utils.position;
 
 public sealed interface Position permits MutablePosition, ImmutablePosition {
 
+    Position ZERO = new ImmutablePosition(0,0);
+
     float x();
     float y();
 

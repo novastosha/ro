@@ -37,6 +37,7 @@ public class Cloud implements DrawableEntity {
                 am,
                 position.toPoint2D(),
                 projectionMatrix,
+                this.boundingBox(),
                 DrawProperty.scale(CLOUD_SCALE)
         );
     }

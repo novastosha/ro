@@ -2,10 +2,12 @@ package zodalix.ro.engine.asset;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
 import org.lwjgl.BufferUtils;
 import zodalix.ro.engine.asset.provider.AssetProvider;
+import zodalix.ro.engine.utils.BoundingBox;
 import zodalix.ro.game.RoguesOdyssey;
 import zodalix.ro.engine.utils.position.Point2D;
 import zodalix.ro.engine.utils.NamespacedKey;
@@ -87,7 +89,7 @@ public class GameTexture {
         return height;
     }
 
-    public void drawDefault(AssetManager am, Point2D position, Matrix4f projectionMatrix, DrawProperty... drawProperties) {
+    public void drawDefault(AssetManager am, Point2D position, Matrix4f projectionMatrix, @Nullable BoundingBox bb, DrawProperty... drawProperties) {
         float width = getWidth(), height = getHeight();
         float scale = 1f, rotation = 0;
         Color colorTransform = null;
@@ -103,10 +105,13 @@ public class GameTexture {
                 }
             }
 
-        drawDefault0(am, position, 0, 0, getWidth(), getHeight(), width, height, scale, projectionMatrix, colorTransform, rotation);
+        drawDefault0(am, position, 0, 0, getWidth(), getHeight(), width, height, scale, projectionMatrix, colorTransform, rotation,bb);
     }
 
-    protected void drawDefault0(AssetManager am, Point2D position, float beginWidth, float beginHeight, float endWidth, float endHeight, float width, float height, float scale, Matrix4f projectionMatrix, Color colorTransform, float rotationDegrees) {
+    protected void drawDefault0(AssetManager am, Point2D position, float beginWidth, float beginHeight, float endWidth, float endHeight, float width, float height, float scale, Matrix4f projectionMatrix, Color colorTransform, float rotationDegrees, @Nullable BoundingBox bb) {
+        if(bb != null && !bb.isScreenVisible(position.x, position.y, projectionMatrix))
+            return;
+
         position = RenderingUtils.transformCoordinates(position, RoguesOdyssey.instance().renderer);
 
         if (colorTransform == null) colorTransform = Color.white;
@@ -124,6 +129,9 @@ public class GameTexture {
 
 
         glUniform1i(textureHandle, 0);
+
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_BLEND);
 
         int positionHandle = glGetAttribLocation(shaderProgram, "aPosition"),
                 texCoordHandle = glGetAttribLocation(shaderProgram, "aTexCoord"),
@@ -210,5 +218,6 @@ public class GameTexture {
 
         glUseProgram(0);
         glBindTexture(GL_TEXTURE_2D, 0);
+        glDisable(GL_BLEND);
     }
 }
