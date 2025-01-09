@@ -24,5 +24,4 @@ public interface GUIElement {
     record HoverEvent(boolean isHoverEnd) implements Event {}
 
     record ClickEvent(int button, int modifiers, int action) implements Event {}
-
 }

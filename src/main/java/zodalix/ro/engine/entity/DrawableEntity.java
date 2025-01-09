@@ -1,4 +1,4 @@
-package zodalix.ro.engine.base.entity;
+package zodalix.ro.engine.entity;
 
 import org.joml.Matrix4f;
 

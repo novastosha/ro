@@ -1,5 +1,7 @@
 package zodalix.ro.engine.screen.ui.elements.text;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import zodalix.ro.game.RoguesOdyssey;
@@ -12,16 +14,18 @@ import zodalix.ro.engine.screen.ui.GUIScreen;
 import zodalix.ro.engine.screen.ui.elements.GUIElement;
 import zodalix.ro.engine.utils.RenderingUtils;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.foreign.Arena;
 import java.lang.foreign.ValueLayout;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 
 import static org.lwjgl.opengl.GL33.*;
-import static zodalix.ro.engine.screen.ui.elements.text.StringTextComponent.LOW_HANGING_CHARACTERS;
-import static zodalix.ro.engine.screen.ui.elements.text.StringTextComponent.LOW_OFFSET_CHARACTERS;
 import static zodalix.ro.engine.utils.RenderingUtils.normalizeRGBA;
 
 public class Text implements GUIElement {
@@ -74,9 +78,51 @@ public class Text implements GUIElement {
         this.bb = calculateBoundingBox();
     }
 
+    private static final Map<Character, Float> widthSpacingMap = new HashMap<>(), heightSpacingMap = new HashMap<>();
+    private static final Gson gson = new Gson();
+
+    private static int WIDTH_PIXELS = 15, HEIGHT_PIXELS = 14;
+
     {
         this.texture = RoguesOdyssey.instance().assetManager
                 .getTexture(NamespacedKey.getDefault("text/ascii"));
+
+        if (Text.widthSpacingMap.isEmpty() || Text.heightSpacingMap.isEmpty()) { // Kill me.
+            try (var inputStream = RoguesOdyssey.instance().assetManager.getInputStream(NamespacedKey.getDefault("text/default_spacing.json"))) {
+                if (inputStream == null) throw new IllegalStateException("Spacing file couldn't be found!");
+
+                var reader = gson.newJsonReader(new InputStreamReader(inputStream));
+
+                var root = (JsonObject) gson.fromJson(reader, JsonObject.class);
+
+                Text.WIDTH_PIXELS = root.get("width_pixels").getAsInt();
+                Text.HEIGHT_PIXELS = root.get("height_pixels").getAsInt();
+
+                var widthMap = root.getAsJsonObject("width_add");
+                for(var entry : widthMap.asMap().entrySet()) {
+                    char charVal = Character.MAX_VALUE;
+                    if(!entry.getKey().equalsIgnoreCase("default")) {
+                        charVal = entry.getKey().charAt(0);
+                    }
+
+                    Text.widthSpacingMap.put(charVal,entry.getValue().getAsFloat());
+                }
+
+                var heightMap = root.getAsJsonObject("height_add");
+                for(var entry : heightMap.asMap().entrySet()) {
+                    char charVal = Character.MAX_VALUE;
+                    if(!entry.getKey().equalsIgnoreCase("default")) {
+                        charVal = entry.getKey().charAt(0);
+                    }
+
+                    Text.heightSpacingMap.put(charVal,entry.getValue().getAsFloat());
+                }
+
+                reader.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         this.shader = RoguesOdyssey.instance().assetManager
                 .getShader(NamespacedKey.getDefault("shader/textured"));
@@ -115,7 +161,7 @@ public class Text implements GUIElement {
 
     @Override
     public void draw(GUIScreen screen, float cursorX, float cursorY, Matrix4f projectionMatrix, float deltaTime) {
-        if(bb != null && !bb.isScreenVisible(this.x, this.y, projectionMatrix))
+        if (bb != null && !bb.isScreenVisible(this.x, this.y, projectionMatrix))
             return;
 
         var transformedX = RenderingUtils.transformPoint(x, RoguesOdyssey.instance().renderer);
@@ -123,36 +169,41 @@ public class Text implements GUIElement {
 
         AtomicReference<Float> drawX = new AtomicReference<>(
                 drawStyle == DrawStyle.CENTERED ?
-                centeredStartDraw : transformedX
+                        centeredStartDraw : transformedX
         );
 
-        loopChildrenAndDraw(drawX, this.text,projectionMatrix);
+        loopChildrenAndDraw(drawX, this.text, projectionMatrix);
     }
 
-    private void loopChildrenAndDraw(AtomicReference<Float> drawX, TextComponent parentComponent,Matrix4f projectionMatrix) {
-        for (int m = 0; m < parentComponent.children().size()+1; m++) {
+    private void loopChildrenAndDraw(AtomicReference<Float> drawX, TextComponent parentComponent, Matrix4f projectionMatrix) {
+        for (int m = 0; m < parentComponent.children().size() + 1; m++) {
             TextComponent component = null;
 
-            if (m == 0) { if (!parentComponent.getClass().equals(TextComponent.class)) component = parentComponent; }
-            else component = parentComponent.children().get(m - 1);
+            if (m == 0) {
+                if (!parentComponent.getClass().equals(TextComponent.class)) component = parentComponent;
+            } else component = parentComponent.children().get(m - 1);
 
             switch (component) {
-                case StringTextComponent stringTextComponent ->
-                        {
-                            var offset = drawStringTextComponent(stringTextComponent, drawX, projectionMatrix);
-                            drawX.set(drawX.get() + offset);
-                        }
+                case StringTextComponent stringTextComponent -> {
+                    var offset = drawStringTextComponent(stringTextComponent, drawX, projectionMatrix);
+                    drawX.set(drawX.get() + offset);
+                }
 
-                case TextComponent textComponent when textComponent.children().size() > 0 -> loopChildrenAndDraw(drawX, textComponent, projectionMatrix);
+                case TextComponent textComponent when !textComponent.children().isEmpty() ->
+                        loopChildrenAndDraw(drawX, textComponent, projectionMatrix);
 
-                case null, default -> {}
+                case null, default -> {
+                }
             }
         }
     }
 
+
+
     @Override
     public void onElementEvent(Event event, float cursorX, float cursorY) {
-        if (Objects.requireNonNull(event) instanceof HoverEvent hoverEvent) this.isHoveredOver = !hoverEvent.isHoverEnd();
+        if (event instanceof HoverEvent hoverEvent)
+            this.isHoveredOver = !hoverEvent.isHoverEnd();
     }
 
     private float drawStringTextComponent(StringTextComponent component, AtomicReference<Float> x, Matrix4f projectionMatrix) {
@@ -178,7 +229,7 @@ public class Text implements GUIElement {
                 texCoordHandle = glGetAttribLocation(shaderProgram, "aTexCoord"),
                 colorHandle = glGetAttribLocation(shaderProgram, "aColor");
 
-        BiFunction<Vector2f, Float,Float> drawFunc = (pos, darknessFactor) -> {
+        BiFunction<Vector2f, Float, Float> drawFunc = (pos, darknessFactor) -> {
             //pos = RenderingUtils.transformCoordinates(pos, RoguesOdyssey.instance().renderer);
             var text = component.getString();
 
@@ -211,12 +262,11 @@ public class Text implements GUIElement {
                 glEnableVertexAttribArray(texCoordHandle);
                 glEnableVertexAttribArray(colorHandle);
                 try (var arena = Arena.ofConfined()) {
-                    int     beginX = Math.max(((int) (Math.floor(character / 16f)) * 16), 0),
+                    int beginX = Math.max(((int) (Math.floor(character / 16f)) * 16), 0),
                             beginY = Math.max(((character % 16) * 16), 0);
 
-                    int     endX = beginX + 15,
-                            endY = beginY + 14;
-                    if (LOW_HANGING_CHARACTERS.contains(character)) endX += 1f;
+                    int endX = beginX + Text.WIDTH_PIXELS + heightSpacingMap.getOrDefault(character,heightSpacingMap.get(Character.MAX_VALUE)).intValue(),
+                            endY = beginY + Text.HEIGHT_PIXELS;
 
 
                     {
@@ -277,11 +327,11 @@ public class Text implements GUIElement {
                 glDisableVertexAttribArray(colorHandle);
 
 
-                    xOffset += 1.1f * scale;
-                    if (LOW_OFFSET_CHARACTERS.contains(character)) {
-                        xOffset -= (character == 'i' || character == '\'' || character == ' ' ? .4f : 0.2f) * (scale);
-                        lowOffsetPassed = true;
-                    } else lowOffsetPassed = false;
+                xOffset += 1.1f * scale;
+                if(Text.widthSpacingMap.containsKey(character)) {
+                    xOffset += Text.widthSpacingMap.getOrDefault(character, Text.widthSpacingMap.get(Character.MAX_VALUE)) * scale;
+                    lowOffsetPassed = true;
+                } else lowOffsetPassed = false;
             }
 
             return xOffset;
@@ -289,7 +339,8 @@ public class Text implements GUIElement {
 
         float xNative = x.get();
 
-        if(component.shouldDrawShadow()) drawFunc.apply(new Vector2f((xNative - (0.05f * scale)), y - (0.05f * scale)), 1.5f);
+        if (component.shouldDrawShadow())
+            drawFunc.apply(new Vector2f((xNative - (0.05f * scale)), y - (0.05f * scale)), 1.5f);
 
         float offset = 0;
         for (int i = 0; i < (component.isBold() ? 2 : 1); i++) {

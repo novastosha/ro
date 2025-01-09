@@ -15,7 +15,7 @@ import java.awt.Color;
  * @see Scale
  * @see Dimensions
  */
-public sealed interface DrawProperty permits DrawProperty.ColorTransform, DrawProperty.Dimensions, DrawProperty.Rotation, DrawProperty.Scale {
+public sealed interface DrawProperty permits DrawProperty.ColorTransform, DrawProperty.Dimensions, DrawProperty.Rotation, DrawProperty.Scale, DrawProperty.StretchProperty {
     /**
      * Describes what color should be applied to the texture in the GPU shader call.
      * @param color the color to apply
@@ -33,6 +33,8 @@ public sealed interface DrawProperty permits DrawProperty.ColorTransform, DrawPr
      * @param value how large the texture should be. {@code value > 0]}
      */
     record Scale(float value) implements DrawProperty { }
+
+    record StretchProperty() implements DrawProperty {}
 
     /**
      * When passed into a draw call, it forces the passed on width and height to the texture thus making it either stretch or shrink to fit the dimensions.
@@ -69,8 +71,7 @@ public sealed interface DrawProperty permits DrawProperty.ColorTransform, DrawPr
      * @return an instance of {@link Dimensions} set to the window's dimensions.
      */
     static DrawProperty stretch() {
-        return new Dimensions(RoguesOdyssey.instance().renderer.getLastKnownWindowWidth(),
-                                RoguesOdyssey.instance().renderer.getLastKnownWindowHeight());
+        return new StretchProperty();
     }
 
     static DrawProperty[] of(DrawProperty... properties) {

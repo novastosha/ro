@@ -1,7 +1,7 @@
 package zodalix.ro.engine.renderer;
 
 import org.jetbrains.annotations.Nullable;
-import zodalix.ro.engine.base.entity.Entity;
+import zodalix.ro.engine.entity.Entity;
 import zodalix.ro.engine.utils.Subscription;
 import zodalix.ro.engine.utils.position.MutablePosition;
 import zodalix.ro.engine.utils.position.Position;
@@ -31,7 +31,7 @@ public non-sealed class EntityAttachedCamera extends Camera {
 
     @Override
     public float getFOV() {
-        return 90f;
+        return 60f;
     }
 
     @Override

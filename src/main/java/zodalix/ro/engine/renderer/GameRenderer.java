@@ -4,8 +4,10 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFWWindowSizeCallbackI;
-import zodalix.ro.engine.base.Tickable;
+import org.lwjgl.system.MemoryUtil;
+import zodalix.ro.engine.Tickable;
 import zodalix.ro.engine.screen.CameraAwareGameScreen;
+import zodalix.ro.engine.screen.TabScreen;
 import zodalix.ro.game.RoguesOdyssey;
 import zodalix.ro.engine.utils.position.Point2D;
 import zodalix.ro.engine.screen.GameScreen;
@@ -13,8 +15,12 @@ import zodalix.ro.engine.screen.InputListeningGameScreen;
 import zodalix.ro.engine.screen.ui.elements.text.Text;
 import zodalix.ro.engine.screen.ui.elements.text.TextComponent;
 
+import java.nio.IntBuffer;
+import java.util.Objects;
+
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL33.*;
+import static org.lwjgl.system.MemoryStack.stackPush;
 
 /**
  * The {@code GameRenderer} class is responsible for rendering the game content using OpenGL and managing the
@@ -28,6 +34,8 @@ import static org.lwjgl.opengl.GL33.*;
  * @see org.lwjgl.opengl.GL33
  */
 public class GameRenderer implements Tickable {
+
+    private boolean isFullScreen;
 
     private Text debugText, ramText, frameInfoText;
     private boolean showDebugInfo = false;
@@ -49,6 +57,8 @@ public class GameRenderer implements Tickable {
     public GameRenderer(RoguesOdyssey instance) {
         this.currentScreen = null;
         this.shouldOverlay = false;
+
+        this.isFullScreen = false;
 
         this.projectionMatrix = new Matrix4f()
                 .setOrtho(-10.0f, 10.0f, -10.0f, 10.0f, -1f, 1f);
@@ -107,7 +117,7 @@ public class GameRenderer implements Tickable {
         }
 
         this.currentScreen = newScreen;
-        if(this.currentScreen instanceof CameraAwareGameScreen camAware)
+        if (this.currentScreen instanceof CameraAwareGameScreen camAware)
             this.recalculateMatrices(camAware.camera());
 
     }
@@ -121,13 +131,13 @@ public class GameRenderer implements Tickable {
 
         if (shouldOverlay) {
             overlayingScreen.draw(projectionMatrix, deltaTime);
-            if(this.overlayingScreen instanceof CameraAwareGameScreen camAwareOverlay) {
-                camAwareOverlay.drawCamera(renderMatrix,deltaTime);
+            if (this.overlayingScreen instanceof CameraAwareGameScreen camAwareOverlay) {
+                camAwareOverlay.drawCamera(renderMatrix, deltaTime);
             } // Overlaying might be removed soon.
         }
 
         this.currentScreen.draw(projectionMatrix, deltaTime);
-        if(this.currentScreen instanceof CameraAwareGameScreen cameraAwareGameScreen) {
+        if (this.currentScreen instanceof CameraAwareGameScreen cameraAwareGameScreen) {
             cameraAwareGameScreen.drawCamera(renderMatrix, deltaTime);
         }
 
@@ -189,15 +199,25 @@ public class GameRenderer implements Tickable {
 
     /**
      * Handles keyboard input events and passes them to the active {@link InputListeningGameScreen}.
-     * It also toggles debug info when F1 is pressed.
+     * <p>
+     * The {@link GameRenderer} overrides two function keys:
+     * <ul>
+     * <li>F11 to switch between windowed mode and full screen</li>
+     * <li>F1  to display debug information</li>
+     * </ul>
+     * </p>
      *
-     * @param keycode    the key that was pressed or released.
-     * @param modifiers  any modifier keys that were held during the event.
-     * @param action     the type of action (press/release)
-     *
+     * @param keycode   the key that was pressed or released.
+     * @param modifiers any modifier keys that were held during the event.
+     * @param action    the type of action (press/release)
      * @return always {@code false}, a flag for the {@link zodalix.ro.engine.input.GameInputHandler} to not stop but pass the event to other listeners.
      */
     public boolean handleKeyboardInput(int keycode, int modifiers, int action) {
+        if (action != GLFW_RELEASE && keycode == GLFW_KEY_F11) {
+            this.switchScreenModes();
+            return false;
+        }
+
         this.showDebugInfo = action != GLFW_RELEASE && keycode == GLFW_KEY_F1;
 
         if (!(this.currentScreen instanceof InputListeningGameScreen ilGameScreen)) return false;
@@ -206,13 +226,60 @@ public class GameRenderer implements Tickable {
         return false;
     }
 
+    private void switchScreenModes() {
+        var vidmode = Objects.requireNonNull(glfwGetVideoMode(glfwGetPrimaryMonitor()), "Video mode is null (no monitor?)");
+
+        if (this.isFullScreen) {
+            // Go windowed
+            var windowHandle = RoguesOdyssey.instance().windowHandle;
+            final int width = 1280, height = 720;
+
+            glfwSetWindowMonitor(
+                    windowHandle, // Window handle
+                    MemoryUtil.NULL,
+                    0,
+                    0,
+                    width,
+                    height,
+                    GLFW_DONT_CARE
+            );
+
+            try (var stack = stackPush()) {
+                IntBuffer pWidth = stack.mallocInt(1);
+                IntBuffer pHeight = stack.mallocInt(1);
+
+                glfwGetWindowSize(windowHandle, pWidth, pHeight);
+
+                glfwSetWindowPos(
+                        windowHandle,
+                        (vidmode.width() - pWidth.get(0)) / 2,
+                        (vidmode.height() - pHeight.get(0)) / 2
+                );
+            }
+        } else {
+            // Go fullscreen
+            long monitor = glfwGetPrimaryMonitor();
+            glfwSetWindowMonitor(
+                    RoguesOdyssey.instance().windowHandle,
+                    monitor,
+                    0,
+                    0,
+                    vidmode.width(),
+                    vidmode.height(),
+                    vidmode.refreshRate()
+            );
+        }
+
+        this.isFullScreen = !this.isFullScreen;
+    }
+
     /**
      * Displays the FPS, frame-time, and render-time information on the screen.
      * This is part of the debug information displayed when debug mode is enabled.
      *
-     * @param fps         the current frames per second.
-     * @param frametime   the time taken to render the previous frame in milliseconds.
-     * @param renderDiff  the time taken to render the current frame in milliseconds.
+     * @param fps        the current frames per second.
+     * @param frametime  the time taken to render the previous frame in milliseconds.
+     * @param renderDiff the time taken to render the current frame in milliseconds.
      */
     public void displayFPS(long fps, long frametime, long renderDiff) {
         debugText.setText(TextComponent.composedText("<cyan shadow>{} FPS", fps));
@@ -236,12 +303,13 @@ public class GameRenderer implements Tickable {
     @Override
     public void tick(float deltaTime) {
 
-        if(this.currentScreen == null) return;
+        if (this.currentScreen == null) return;
         this.currentScreen.tick(deltaTime);
+
     }
 
     void cameraChanged(Camera camera) {
-        if(!(this.currentScreen instanceof CameraAwareGameScreen camAware) || camAware.camera() != camera) return;
+        if (!(this.currentScreen instanceof CameraAwareGameScreen camAware) || camAware.camera() != camera) return;
 
         this.recalculateMatrices(camera);
     }
@@ -264,4 +332,9 @@ public class GameRenderer implements Tickable {
             this.renderMatrix.setOrtho(-10f * aspectRatio, 10f * aspectRatio, -10f, 10f, -1, 1);
 
         this.projectionMatrix.setOrtho(-10f * aspectRatio, 10f * aspectRatio, -10f, 10f, -1, 1);    }
+
+    public void tabulateRequest(int modifiers) {
+        if(this.currentScreen instanceof TabScreen tabScreen)
+            tabScreen.tabulated(modifiers);
+    }
 }

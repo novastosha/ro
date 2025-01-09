@@ -1,4 +1,4 @@
-package zodalix.ro.engine.base.entity;
+package zodalix.ro.engine.entity;
 
 public class EntityController {
     private final Entity entity;

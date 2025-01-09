@@ -8,11 +8,10 @@ import java.util.concurrent.atomic.AtomicReference;
 public class StringTextComponent extends TextComponent {
     public static final char CURSOR_CHARACTER = 240;
 
+    // remove asap
     public static final Set<Character> LOW_OFFSET_CHARACTERS = Set.of(
             ' ', 'i', 'l', 'I', 't', 'f', '\'', ',', ':', CURSOR_CHARACTER
     );
-
-    public static final Set<Character> LOW_HANGING_CHARACTERS = Set.of('g', 'y', 'j', 'p', 'q');
 
     public static final float normalizedWidth = 10f / 16f;
 

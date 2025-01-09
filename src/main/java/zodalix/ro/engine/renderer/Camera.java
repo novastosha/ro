@@ -1,7 +1,6 @@
 package zodalix.ro.engine.renderer;
 
-import zodalix.ro.engine.base.Tickable;
-import zodalix.ro.engine.utils.position.ImmutablePosition;
+import zodalix.ro.engine.Tickable;
 import zodalix.ro.engine.utils.position.Position;
 import zodalix.ro.game.RoguesOdyssey;
 

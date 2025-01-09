@@ -13,7 +13,7 @@ import static org.lwjgl.opengl.GL33.*;
 
 public class GameShader {
 
-    private static final Logger logger = LogManager.getLogger("Shaders");
+    private static final Logger logger = LogManager.getLogger(GameShader.class);
 
     private final NamespacedKey key;
 

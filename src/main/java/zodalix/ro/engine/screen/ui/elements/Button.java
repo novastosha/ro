@@ -13,9 +13,10 @@ import zodalix.ro.engine.screen.ui.GUIScreen;
 import zodalix.ro.engine.screen.ui.elements.text.Text;
 import zodalix.ro.engine.screen.ui.elements.text.TextComponent;
 
+import java.util.Set;
 import java.util.function.Consumer;
 
-public class Button implements GUIElement {
+public class Button implements SelectableGUIElement {
 
     private static final float BUTTON_SCALE = .5f; //.375f;
 
@@ -166,5 +167,11 @@ public class Button implements GUIElement {
                 am.getTexture(NamespacedKey.getDefault("textures/buttons/button"));
 
         texture.drawDefault(am, new Point2D(x, y), projectionMatrix, this.boundingBox(), DrawProperty.scale(BUTTON_SCALE), DrawProperty.dimensions(neededWidth, neededHeight));
+    }
+
+    @Override
+    @Nullable
+    public Set<GUIElement> elementChildren() {
+        return null;
     }
 }

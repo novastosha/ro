@@ -37,10 +37,11 @@ final class BackgroundScreen implements GameScreen {
 
         this.clouds = new HashMap<>();
 
+        int cloudNum = 20;
         int cloudSelection = 1;
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < cloudNum; i++) {
             var position = new MutablePosition(x += 1f + (random.nextBoolean() ? +random.nextFloat() : -random.nextFloat()), 7.5f + (random.nextBoolean() ? -1.25f : +1.75f));
-            this.clouds.put(new Cloud(position, cloudSelection, true), position);
+            this.clouds.put(new Cloud(position, cloudSelection, false), position);
 
             cloudSelection++;
             if (cloudSelection > 10) cloudSelection = 0;
@@ -77,7 +78,6 @@ final class BackgroundScreen implements GameScreen {
             boolean isFast = index % 2 != 0;
 
             pos.setX(pos.x() + (0.25f * deltaTime * (isFast ? 1.75f : 1)));
-            var renderer = RoguesOdyssey.instance().renderer;
 
             if (!cloud.boundingBox().isScreenVisible(pos.x(), pos.y(), projectionMatrix)) {
                 pos.setX(x + (.5f + (random.nextBoolean() ? +random.nextFloat() : -random.nextFloat())));

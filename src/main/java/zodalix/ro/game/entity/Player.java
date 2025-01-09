@@ -4,9 +4,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import zodalix.ro.engine.asset.GameTexture;
-import zodalix.ro.engine.base.entity.ControllableEntity;
-import zodalix.ro.engine.base.entity.DrawableEntity;
-import zodalix.ro.engine.base.entity.Entity;
+import zodalix.ro.engine.entity.ControllableEntity;
+import zodalix.ro.engine.entity.DrawableEntity;
+import zodalix.ro.engine.entity.Entity;
 import zodalix.ro.engine.renderer.DrawProperty;
 import zodalix.ro.engine.utils.BoundingBox;
 import zodalix.ro.engine.utils.NamespacedKey;
@@ -19,7 +19,6 @@ import zodalix.ro.game.entity.controller.PlayerController;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
 public class Player implements ControllableEntity<PlayerController>, DrawableEntity, Entity.MovementSubscribable{
@@ -34,11 +33,14 @@ public class Player implements ControllableEntity<PlayerController>, DrawableEnt
     private final GameTexture placeholderTexture;
     private final float scale;
 
-    private @NotNull List<Subscription<Position>> movementSubscribers;
+    private final float health;
+
+    private final @NotNull List<Subscription<Position>> movementSubscribers;
 
     {
         this.uuid = UUID.randomUUID();
         this.bb = BoundingBox.rectangle(1, 2.5F);
+        this.scale = 1 / 10f;
 
         this.controller = new PlayerController(this);
         this.position = new MutablePosition(0, 0);
@@ -46,9 +48,9 @@ public class Player implements ControllableEntity<PlayerController>, DrawableEnt
         this.placeholderTexture = RoguesOdyssey.instance().assetManager
                 .getTexture(NamespacedKey.getDefault("textures/player/placeholder_player"));
 
-        this.scale = 1 / 10f;
-
         this.movementSubscribers = new ArrayList<>();
+
+        this.health = 20f;
     }
 
     @Override
@@ -110,7 +112,7 @@ public class Player implements ControllableEntity<PlayerController>, DrawableEnt
         var sub = new Subscription<>(
                 updateFunction,
                 cancelledCallback,
-                (instance) -> this.movementSubscribers.remove(instance)
+                this.movementSubscribers::remove
         );
 
         this.movementSubscribers.add(sub);
@@ -123,4 +125,7 @@ public class Player implements ControllableEntity<PlayerController>, DrawableEnt
         if(callback) tSubscription.getCancelledCallback().run();
     }
 
+    public float health() {
+        return health;
+    }
 }

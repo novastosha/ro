@@ -3,7 +3,6 @@ package zodalix.ro.engine.utils;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector4f;
-import zodalix.ro.engine.renderer.GameRenderer;
 import org.joml.Matrix4f;
 
 /**
@@ -117,11 +116,11 @@ public record BoundingBox(float leftX, float rightX, float topY, float bottomY) 
     }
 
     /**
-     * Checks if this bounding box is visible within the game window
+     * Checks if this bounding box is visible within the game window.
      *
-     * @param x                The X coordinate of the bounding box's origin.
-     * @param y                The Y coordinate of the bounding box's origin.
-     * @param projectionMatrix The projection to calculate visibility against. Usually the {@code projectionMatrix} or {@code combinedMatrix} derived from the {@link GameRenderer}
+     * @param x                The world X coordinate of the bounding box's origin.
+     * @param y                The world Y coordinate of the bounding box's origin.
+     * @param projectionMatrix The combined matrix (projection * view) representing the camera's view.
      * @return {@code true} if the bounding box is visible on the screen; otherwise, {@code false}.
      */
     public boolean isScreenVisible(float x, float y, @NotNull Matrix4f projectionMatrix) {
@@ -132,7 +131,13 @@ public record BoundingBox(float leftX, float rightX, float topY, float bottomY) 
                 new Vector4f(x + this.rightX(), y + this.topY(), 0, 1) // Top-right
         };
 
-        boolean visible = false;
+        // Screen bounds in normalized device coordinates
+        float screenMinX = -1, screenMaxX = 1;
+        float screenMinY = -1, screenMaxY = 1;
+
+        // Initialize bounding box extents in clip space
+        float minX = Float.POSITIVE_INFINITY, minY = Float.POSITIVE_INFINITY;
+        float maxX = Float.NEGATIVE_INFINITY, maxY = Float.NEGATIVE_INFINITY;
 
         for (Vector4f corner : corners) {
             projectionMatrix.transform(corner);
@@ -142,12 +147,19 @@ public record BoundingBox(float leftX, float rightX, float topY, float bottomY) 
                 corner.z /= corner.w;
             }
 
-            if (corner.x >= -1 && corner.x <= 1 && corner.y >= -1 && corner.y <= 1 && corner.z >= -1 && corner.z <= 1) {
-                visible = true;
-                break; // If any corner is visible, the bounding box is visible
-            }
+            // Check if the corner is inside the visible bounds
+            if (corner.x >= -1 && corner.x <= 1 && corner.y >= -1 && corner.y <= 1 && corner.z >= -1 && corner.z <= 1)
+                return true;
+
+
+            minX = Math.min(minX, corner.x);
+            maxX = Math.max(maxX, corner.x);
+            minY = Math.min(minY, corner.y);
+            maxY = Math.max(maxY, corner.y);
         }
 
-        return visible;
+        return minX <= screenMaxX && maxX >= screenMinX &&
+                minY <= screenMaxY && maxY >= screenMinY;
     }
+
 }

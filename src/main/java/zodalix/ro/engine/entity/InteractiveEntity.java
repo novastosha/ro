@@ -1,4 +1,4 @@
-package zodalix.ro.engine.base.entity;
+package zodalix.ro.engine.entity;
 
 public interface InteractiveEntity extends Entity {
 }

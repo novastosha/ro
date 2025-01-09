@@ -2,6 +2,8 @@ package zodalix.ro.engine.screen.ui;
 
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
+import zodalix.ro.engine.screen.TabScreen;
+import zodalix.ro.engine.screen.ui.elements.SelectableGUIElement;
 import zodalix.ro.game.RoguesOdyssey;
 import zodalix.ro.engine.asset.GameShader;
 import zodalix.ro.engine.utils.position.Point2D;
@@ -14,14 +16,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.lwjgl.glfw.GLFW.glfwGetCursorPos;
+import static org.lwjgl.glfw.GLFW.*;
 
 /**
  * Represents a game interface with common controls such as buttons, sliders, etc...
  */
-public class GUIScreen implements InputListeningGameScreen {
+public class GUIScreen implements InputListeningGameScreen, TabScreen {
+    public static final int MOD_TAB_ACTION = 128;
+
     private final List<GUIElement> elements;
     private final GameShader defaultShader;
+
+    protected int lastTabbedElement = -1;
 
     {
         this.elements = new ArrayList<>();
@@ -65,11 +71,13 @@ public class GUIScreen implements InputListeningGameScreen {
 
     private void elementEvents(float mouseX, float mouseY) {
         for (var element : elements) {
+            int index = this.elements.indexOf(element);
+
             var gameRenderer = RoguesOdyssey.instance().renderer;
 
             if (element.boundingBox().containsPoint(RenderingUtils.transformPoint(element.x(), gameRenderer), element.y(), mouseX, mouseY))
                 element.onElementEvent(new GUIElement.HoverEvent(false), mouseX, mouseY);
-            else if (element.isHoveredOver()) element.onElementEvent(new GUIElement.HoverEvent(true), mouseX, mouseY);
+            else if (element.isHoveredOver() && index != lastTabbedElement) element.onElementEvent(new GUIElement.HoverEvent(true), mouseX, mouseY);
         }
     }
 
@@ -85,6 +93,56 @@ public class GUIScreen implements InputListeningGameScreen {
 
     @Override
     public void keyboardInput(int key, int mods, int action) {
+        this.processTabulateInput(key, mods, action);
+    }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @implNote Override this to omit tabulation's {@link GUIScreen#keyboardInput(int, int, int)} logic.
+     */
+    protected void processTabulateInput(int key, int mods, int action) {
+        if(key != GLFW_KEY_ENTER) return;
+        if(action == GLFW_PRESS) return;
+        if(this.lastTabbedElement == -1) return;
+
+        var rightClick = (mods & GLFW_MOD_ALT) != 0;
+
+        var element = this.elements.get(this.lastTabbedElement);
+        element.onElementEvent(
+                new GUIElement.ClickEvent
+                        (rightClick ? GLFW_MOUSE_BUTTON_2 : GLFW_MOUSE_BUTTON_1, mods | GUIScreen.MOD_TAB_ACTION, action)
+                , element.x(), element.y());
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * {@code super} implements a basic tabulating logic, change it as you wish.
+     *
+     * @param modifiers keyboard modifiers alongside the Tab key. e.g. Ctrl+Tab
+     */
+    @Override
+    public void tabulated(int modifiers) {
+        if (!this.elements.isEmpty()) {
+            if (this.lastTabbedElement + 1 < this.elements.size())
+                for (int i = this.lastTabbedElement + 1; i < this.elements.size(); i++) {
+                    if (!(this.elements.get(i) instanceof SelectableGUIElement)) continue;
+
+                    this.lastTabbedElement = i;
+                    break;
+                }
+            else {
+                var element = this.elements.get(this.lastTabbedElement);
+                element.onElementEvent(new GUIElement.HoverEvent(true), element.x(), element.y());
+
+                lastTabbedElement = -1;
+            }
+        }
+
+        if (lastTabbedElement > 0) {
+            var element = this.elements.get(this.lastTabbedElement);
+            element.onElementEvent(new GUIElement.HoverEvent(false), element.x(), element.y());
+        }
     }
 }

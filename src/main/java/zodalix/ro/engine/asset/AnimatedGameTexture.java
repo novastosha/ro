@@ -50,19 +50,23 @@ public class AnimatedGameTexture extends GameTexture {
         private float elapsedTime = 0f;
 
         public void draw(AssetManager am, Point2D position, Matrix4f projectionMatrix, @Nullable BoundingBox bb, DrawProperty... drawProperties) {
-            float scale = 1f, rotation = 0;
+            float xScale = 1f, yScale = 1f, rotation = 0;
             Color colorTransform = null;
 
-            for (final var property : drawProperties)
+            for (final var property: drawProperties)
                 switch (property) {
-                    case DrawProperty.Scale val -> scale = val.value();
+                    case DrawProperty.Scale val -> {
+                        xScale = val.value();
+                        yScale = val.value(); // Uniform scaling.
+                    }
                     case DrawProperty.Rotation val -> rotation = val.degrees();
                     case DrawProperty.ColorTransform val -> colorTransform = val.color();
                     case DrawProperty.Dimensions _ -> {}
+                    case DrawProperty.StretchProperty _ -> {}
                 }
 
             float frameHeight = getHeight() / (float) totalFrames;
-            AnimatedGameTexture.super.drawDefault0(am, position, 0, frameHeight * currentFrame, getWidth(), frameHeight * ((float) currentFrame + 1f), widthPerFrame, getHeight(), scale, projectionMatrix, colorTransform, rotation, bb);
+            AnimatedGameTexture.super.drawDefault0(am, position, 0, frameHeight * currentFrame, getWidth(), frameHeight * ((float) currentFrame + 1f), widthPerFrame, getHeight(), xScale, yScale, projectionMatrix, colorTransform, rotation, bb);
         }
 
         public void tick(float deltaTime) {

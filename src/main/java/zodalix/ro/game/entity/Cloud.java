@@ -4,7 +4,7 @@ import org.joml.Matrix4f;
 import zodalix.ro.game.RoguesOdyssey;
 import zodalix.ro.engine.asset.GameTexture;
 import zodalix.ro.engine.utils.BoundingBox;
-import zodalix.ro.engine.base.entity.DrawableEntity;
+import zodalix.ro.engine.entity.DrawableEntity;
 import zodalix.ro.engine.utils.NamespacedKey;
 import zodalix.ro.engine.renderer.DrawProperty;
 import zodalix.ro.engine.utils.position.Position;

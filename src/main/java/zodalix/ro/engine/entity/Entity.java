@@ -1,8 +1,8 @@
-package zodalix.ro.engine.base.entity;
+package zodalix.ro.engine.entity;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import zodalix.ro.engine.base.Tickable;
+import zodalix.ro.engine.Tickable;
 import zodalix.ro.engine.utils.BoundingBox;
 import zodalix.ro.engine.utils.Subscription;
 import zodalix.ro.engine.utils.position.Position;

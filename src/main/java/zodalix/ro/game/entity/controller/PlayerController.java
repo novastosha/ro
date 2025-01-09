@@ -1,6 +1,6 @@
 package zodalix.ro.game.entity.controller;
 
-import zodalix.ro.engine.base.entity.EntityController;
+import zodalix.ro.engine.entity.EntityController;
 import zodalix.ro.engine.utils.position.MutablePosition;
 import zodalix.ro.game.entity.Player;
 

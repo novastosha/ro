@@ -25,7 +25,7 @@ import static org.lwjgl.stb.STBImage.*;
 import static zodalix.ro.engine.utils.RenderingUtils.normalizeRGBA;
 
 public class GameTexture {
-    private static final Logger logger = LogManager.getLogger("Assets");
+    private static final Logger logger = LogManager.getLogger(GameTexture.class);
 
     private final NamespacedKey key;
     private transient final int glTextureId;
@@ -91,28 +91,32 @@ public class GameTexture {
 
     public void drawDefault(AssetManager am, Point2D position, Matrix4f projectionMatrix, @Nullable BoundingBox bb, DrawProperty... drawProperties) {
         float width = getWidth(), height = getHeight();
-        float scale = 1f, rotation = 0;
+        float xScale = 1f, yScale = 1f, rotation = 0;
         Color colorTransform = null;
 
         for (final var property: drawProperties)
             switch (property) {
-                case DrawProperty.Scale val -> scale = val.value();
+                case DrawProperty.Scale val -> {
+                    xScale = val.value();
+                    yScale = val.value(); // Uniform scaling.
+                }
                 case DrawProperty.Rotation val -> rotation = val.degrees();
                 case DrawProperty.ColorTransform val -> colorTransform = val.color();
                 case DrawProperty.Dimensions dimensions -> {
                     width = dimensions.width();
                     height = dimensions.height();
                 }
+                case DrawProperty.StretchProperty _ -> {
+                }
             }
 
-        drawDefault0(am, position, 0, 0, getWidth(), getHeight(), width, height, scale, projectionMatrix, colorTransform, rotation,bb);
+        drawDefault0(am, position, 0, 0, getWidth(), getHeight(), width, height, xScale, yScale, projectionMatrix, colorTransform, rotation,bb);
     }
 
-    protected void drawDefault0(AssetManager am, Point2D position, float beginWidth, float beginHeight, float endWidth, float endHeight, float width, float height, float scale, Matrix4f projectionMatrix, Color colorTransform, float rotationDegrees, @Nullable BoundingBox bb) {
+    protected void drawDefault0(AssetManager am, Point2D position, float beginWidth, float beginHeight, float endWidth, float endHeight, float width, float height, float xScale,float yScale, Matrix4f projectionMatrix, Color colorTransform, float rotationDegrees, @Nullable BoundingBox bb) {
+        position = RenderingUtils.transformCoordinates(position, RoguesOdyssey.instance().renderer);
         if(bb != null && !bb.isScreenVisible(position.x, position.y, projectionMatrix))
             return;
-
-        position = RenderingUtils.transformCoordinates(position, RoguesOdyssey.instance().renderer);
 
         if (colorTransform == null) colorTransform = Color.white;
 
@@ -162,7 +166,7 @@ public class GameTexture {
                 {
                     var verticesSegment = arena.allocate(ValueLayout.JAVA_FLOAT, 8);
                     for (int j = 0; j < 8; j++) {
-                        var baseValue = (j % 2 == 0 ? width : height) * scale;
+                        var baseValue = (j % 2 == 0 ? width * xScale : height * yScale);
                         if (j < 2 || (j == 3 || j == 4)) baseValue = -baseValue;
 
                         verticesSegment.set(ValueLayout.OfFloat.JAVA_FLOAT, j * 4, baseValue);

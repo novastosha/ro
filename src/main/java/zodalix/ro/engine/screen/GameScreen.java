@@ -1,7 +1,7 @@
 package zodalix.ro.engine.screen;
 
 import org.joml.Matrix4f;
-import zodalix.ro.engine.base.Tickable;
+import zodalix.ro.engine.Tickable;
 
 public interface GameScreen extends Tickable {
 

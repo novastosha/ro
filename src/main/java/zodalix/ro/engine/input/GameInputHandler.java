@@ -12,8 +12,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
-import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
-import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class GameInputHandler {
     public static final Keybinding MOVE_RIGHT = new Keybinding(NamespacedKey.getDefault("key/move_right"));
@@ -42,6 +41,10 @@ public class GameInputHandler {
      */
     public void keyboardInputReceived(int keycode, int modifiers, int action) {
         if (RoguesOdyssey.instance().renderer.handleKeyboardInput(keycode, modifiers, action)) return;
+
+        if (keycode == GLFW_KEY_TAB && action == GLFW_PRESS)
+            RoguesOdyssey.instance().renderer.tabulateRequest(modifiers);
+
     }
 
     public void mouseInputReceived(int mouseButton, int modifiers, int action) {
