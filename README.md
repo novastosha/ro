@@ -10,4 +10,4 @@ A 2D roguelike dungeon crawler game written in Java. Uses LWJGL and OpenGL.\
 Progress is currently undocumented (except for the git commits), I have sort of a vague idea of what I should or shouldn't work on at the moment; but nothing to share, yet.
 
 # License
-Licensed under the [MIT License](LICENSE)
+Licensed under the [GPL-3.0 License](LICENSE)
